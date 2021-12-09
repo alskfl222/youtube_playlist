@@ -1,9 +1,8 @@
 import os
 import time
-import datetime
+# import datetime
 import multiprocessing
 # import pymysql
-# import itertools
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
