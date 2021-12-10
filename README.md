@@ -2,5 +2,5 @@
 
 > to manage BGM playlist in youtube 
 
-- test in jupyter notebook : test.ipynb
+- testing in jupyter notebook
 - module : test.py

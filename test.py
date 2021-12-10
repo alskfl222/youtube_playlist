@@ -40,20 +40,16 @@ def get_BGM_lists(YOUTUBE_CHANNEL):
     infinite_scroll(driver)
 
     playlists = driver.find_elements(By.CSS_SELECTOR, '#items > ytd-grid-playlist-renderer')
-    BGM_lists = [x.find_element(By.CSS_SELECTOR, '#video-title') for x in playlists
+    BGM_lists_info = [x.find_element(By.CSS_SELECTOR, '#video-title') for x in playlists
                 if any(word in x.find_element(By.CSS_SELECTOR, '#video-title').text for word in ['BGM'])]
 
-    playlist_href = [x.get_attribute("href").split('=')[-1] for x in BGM_lists]
-    playlist_title = [x.text for x in BGM_lists]
-    BGM_lists = sorted(dict(zip(playlist_title, playlist_href)).items())
+    BGM_lists = { x.text: x.get_attribute("href").split('=')[-1] for x in BGM_lists_info }
     driver.quit()
 
-    return BGM_lists
+    return { k: v for k, v in sorted(BGM_lists.items(), key=lambda item: item[0])}
 
 def get_list_items(BGM_list):
     total = []
-    c_proc = multiprocessing.current_process()
-    print("Running on Process", c_proc.name, "PID", c_proc.pid)
     driver = init_driver()
     driver.get('https://www.youtube.com/playlist?list='+BGM_list[1])
     infinite_scroll(driver)
@@ -66,3 +62,13 @@ def get_list_items(BGM_list):
     total.extend(rows)
     driver.quit()
     return total
+
+def get_BGM_data(BGM_lists, workers=8):
+    p = multiprocessing.Pool(workers)
+    BGM_total = []
+    works = p.imap_async(get_list_items, BGM_lists.items())
+    BGM_total = works.get()
+    p.close()
+    p.join()
+    
+    # return total_BGM
