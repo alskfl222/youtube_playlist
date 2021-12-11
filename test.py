@@ -44,12 +44,13 @@ def get_BGM_lists(YOUTUBE_CHANNEL):
                 if any(word in x.find_element(By.CSS_SELECTOR, '#video-title').text for word in ['BGM'])]
 
     BGM_lists = { x.text: x.get_attribute("href").split('=')[-1] for x in BGM_lists_info }
+    print(f"FIND {len(BGM_lists.keys())} lists in {YOUTUBE_CHANNEL} CHANNEL")
     driver.quit()
 
     return { k: v for k, v in sorted(BGM_lists.items(), key=lambda item: item[0])}
 
 def get_list_items(BGM_list):
-    total = []
+    items = []
     driver = init_driver()
     driver.get('https://www.youtube.com/playlist?list='+BGM_list[1])
     infinite_scroll(driver)
@@ -59,16 +60,22 @@ def get_list_items(BGM_list):
             x.text.split("\n")[1],
             x.find_element(By.CSS_SELECTOR, '#video-title').get_attribute("href").split('&')[0].split('=')[1])
             for x in videos]
-    total.extend(rows)
+    items.extend(rows)
     driver.quit()
-    return total
+    return items
 
-def get_BGM_data(BGM_lists, workers=8):
+def get_BGM_data(YOUTUBE_CHANNEL, workers=8):
+    print("START crawling")
+    start = time.time()
+    BGM_lists = get_BGM_lists(YOUTUBE_CHANNEL)
     p = multiprocessing.Pool(workers)
-    BGM_total = []
-    works = p.imap_async(get_list_items, BGM_lists.items())
-    BGM_total = works.get()
+    works = p.map_async(get_list_items, BGM_lists.items())
+    BGM_items = works.get()
     p.close()
     p.join()
-    
-    # return total_BGM
+    print("END crawling")
+    BGM_data = { k : {'href' : v1, 'items': v2 } for k, v1, v2 
+                in zip(BGM_lists.keys(), BGM_lists.values(), BGM_items)}
+    end = time.time()
+    print(f"GET BGM Data from {YOUTUBE_CHANNEL} CHANNEL in {'{:.2f}s'.format(end - start)}")
+    return BGM_data
