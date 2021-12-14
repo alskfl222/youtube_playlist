@@ -3,9 +3,16 @@ CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 USE test;
 
+CREATE TABLE IF NOT EXISTS field (
+    id int PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    table varchar(32) NOT NULL,
+    fields varchar(180) NOT NULL
+) CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 CREATE TABLE IF NOT EXISTS user (
     id int PRIMARY KEY NOT NULL AUTO_INCREMENT,
-    name varchar(180) NOT NULL
+    name varchar(180) NOT NULL,
+    email varchar(180) NOT NULL
 ) CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 CREATE TABLE IF NOT EXISTS song (
