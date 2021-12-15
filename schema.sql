@@ -5,7 +5,7 @@ USE test;
 
 CREATE TABLE IF NOT EXISTS field (
     id int PRIMARY KEY NOT NULL AUTO_INCREMENT,
-    table varchar(32) NOT NULL,
+    table_name varchar(32) NOT NULL,
     fields varchar(180) NOT NULL
 ) CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
