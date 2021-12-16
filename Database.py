@@ -3,7 +3,7 @@ import pymysql
 from dotenv import load_dotenv
 
 class Database():
-    def __init__(self):
+    def __init__(self, user):
         db = self.connect_init()
         cursor = db.cursor()
 
@@ -12,9 +12,20 @@ class Database():
 
         for sql in sqls:
             cursor.execute(sql)
+
+        user_id_sql = f'''
+            SELECT * FROM user
+            WHERE name = "{user}";
+        '''
+        cursor.execute(user_id_sql)
+        res = cursor.fetchone()
+        self.user_id = res[0]
+
         db.commit()
         db.close()
+
         print("DATABASE READY")
+        print(f"USER : {user}")
     
     def connect_init(self):
         load_dotenv()
@@ -73,10 +84,34 @@ class Database():
             VALUES
             {self.make_string('value', value)};
         '''
-        print(sql)
         cursor.execute(sql)
         res = cursor.fetchall()
         db.commit()
         db.close()
         return res
 
+    def insert_many(self, table, list):
+        db = self.connect()
+        cursor = db.cursor()
+        sql = f'''
+            DESCRIBE {table};
+        '''
+        cursor.execute(sql)
+        res = cursor.fetchall()
+        field1 = [x[0] for x in res if x[3] != 'MUL' and x[4] == None and x[5] == '']
+        field2 = [x[0] for x in res if x[3] == 'MUL']
+        print(field1, field2)
+        # for item in list:
+        #     field = item.keys()
+        #     value = item.values()
+        #     sql = f'''
+        #         INSERT INTO {table}
+        #         {self.make_string('field', field)}
+        #         VALUES
+        #         {self.make_string('value', value)};
+        #     '''
+        #     cursor.execute(sql)
+        # res = cursor.fetchall()
+        db.commit()
+        db.close()
+        # return res
