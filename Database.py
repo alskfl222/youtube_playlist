@@ -72,12 +72,33 @@ class Database():
         string += ')'
         return string
 
+    def get_table_info(self):
+        db = self.connect()
+        cursor = db.cursor()
+        sql = f'''
+            SHOW tables;
+        '''
+        cursor.execute(sql)
+        info = {}
+        tables = [x[0] for x in cursor.fetchall()]
+        for table in tables:
+            sql = f'''
+                DESCRIBE {table};
+            '''
+            cursor.execute(sql)
+            res = cursor.fetchall()
+            field1 = [x[0] for x in res if x[3] != 'MUL' and x[4] == None and x[5] == '']
+            field2 = [x[0] for x in res if x[3] == 'MUL']
+            info[table] = (field1, field2)
+        print(info)
+        db.commit()
+        db.close()
+
     def insert_one(self, table, item):
         db = self.connect()
         cursor = db.cursor()
         field = item.keys()
         value = item.values()
-        print(field, value)
         sql = f'''
             INSERT INTO {table}
             {self.make_string('field', field)}
