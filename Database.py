@@ -24,6 +24,8 @@ class Database():
         db.commit()
         db.close()
 
+        self.get_table_info()
+
         print("DATABASE READY")
         print(f"USER : {user}")
     
@@ -64,10 +66,13 @@ class Database():
         string = '('
         if type == 'field':
             for i in iterable:
-                string += i + ', '
+                string += f'{i}, '
         else:
             for i in iterable:
-                string += '"'+ i + '", '
+                if isinstance(i, int):
+                    string += f'{i}, '
+                else:
+                    string += f'"{i}", '
         string = string[:-2]
         string += ')'
         return string
@@ -79,7 +84,7 @@ class Database():
             SHOW tables;
         '''
         cursor.execute(sql)
-        info = {}
+        table_info = {}
         tables = [x[0] for x in cursor.fetchall()]
         for table in tables:
             sql = f'''
@@ -89,27 +94,50 @@ class Database():
             res = cursor.fetchall()
             field1 = [x[0] for x in res if x[3] != 'MUL' and x[4] == None and x[5] == '']
             field2 = [x[0] for x in res if x[3] == 'MUL']
-            info[table] = (field1, field2)
-        print(info)
-        db.commit()
+            table_info[table] = (field1, field2)
+        self.table_info = table_info
         db.close()
+        return table_info
 
-    def insert_one(self, table, item):
+    def create_list(self, list_item):
         db = self.connect()
         cursor = db.cursor()
-        field = item.keys()
-        value = item.values()
         sql = f'''
-            INSERT INTO {table}
+            SELECT * FROM list
+            WHERE name = "{list_item['name']}"
+            OR href = "{list_item['href']}"
+        '''
+        cursor.execute(sql)
+        res = cursor.fetchone()
+        if res:
+            print("Already exists list")
+            return
+        field = [*list_item.keys(), 'user_id']
+        value = [*list_item.values(), self.user_id]
+        sql = f'''
+            INSERT INTO list
             {self.make_string('field', field)}
             VALUES
             {self.make_string('value', value)};
         '''
         cursor.execute(sql)
-        res = cursor.fetchall()
         db.commit()
         db.close()
-        return res
+        self.list_id = cursor.lastrowid
+        return self.list_id
+    
+    def get_list_id(self, list_name):
+        db = self.connect()
+        cursor = db.cursor()
+        sql = f'''
+            SELECT id FROM list
+            WHERE name = "{list_name}"
+        '''
+        cursor.execute(sql)
+        res = cursor.fetchone()
+        db.close()
+        self.list_id = res[0]
+        return self.list_id
 
     def insert_many(self, table, list):
         db = self.connect()
