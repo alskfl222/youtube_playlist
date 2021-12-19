@@ -139,28 +139,40 @@ class Database():
         self.list_id = res[0]
         return self.list_id
 
-    def insert_many(self, table, list):
+    def update_songs(self, BGM_data):
         db = self.connect()
         cursor = db.cursor()
+
+        total_BGM = [y for x in BGM_data.values() for y in x['items']]
+        total_BGM = list(dict.fromkeys(total_BGM))
+
         sql = f'''
-            DESCRIBE {table};
+            SELECT href FROM song
         '''
         cursor.execute(sql)
-        res = cursor.fetchall()
-        field1 = [x[0] for x in res if x[3] != 'MUL' and x[4] == None and x[5] == '']
-        field2 = [x[0] for x in res if x[3] == 'MUL']
-        print(field1, field2)
-        # for item in list:
-        #     field = item.keys()
-        #     value = item.values()
-        #     sql = f'''
-        #         INSERT INTO {table}
-        #         {self.make_string('field', field)}
-        #         VALUES
-        #         {self.make_string('value', value)};
-        #     '''
-        #     cursor.execute(sql)
-        # res = cursor.fetchall()
+        check = [x[0] for x in cursor.fetchall()]
+        insert = [x for x in total_BGM if x[2] not in check]
+        deleted = [x for x in check if x not in [y[2] for y in total_BGM]]
+
+        print(insert, deleted)
+
+        for song in insert:
+            sql = f'''
+                INSERT INTO song
+                (name, uploader, href)
+                VALUES
+                {song};
+            '''
+            cursor.execute(sql)
+
+        for song in deleted:
+            sql = f'''
+                UPDATE song
+                SET deleted = 1
+                WHERE href = "{song[2]}"
+            '''
+            cursor.execute(sql)
+
+
         db.commit()
         db.close()
-        # return res

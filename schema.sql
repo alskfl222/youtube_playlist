@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS field (
 CREATE TABLE IF NOT EXISTS user (
     id int PRIMARY KEY NOT NULL AUTO_INCREMENT,
     name varchar(180) NOT NULL,
-    email varchar(180) NOT NULL
+    email varchar(180)
 ) CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 CREATE TABLE IF NOT EXISTS song (

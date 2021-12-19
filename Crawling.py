@@ -13,7 +13,6 @@ YOUTUBE_CHANNEL = '날림v'
 
 class Crawling():
     def __init__(self):
-        YOUTUBE_CHANNEL = input()
         self.YOUTUBE_CHANNEL = YOUTUBE_CHANNEL
 
     def init_driver(self):
