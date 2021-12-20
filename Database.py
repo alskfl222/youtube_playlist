@@ -154,8 +154,6 @@ class Database():
         insert = [x for x in total_BGM if x[2] not in check]
         deleted = [x for x in check if x not in [y[2] for y in total_BGM]]
 
-        print(insert, deleted)
-
         for song in insert:
             sql = f'''
                 INSERT INTO song
@@ -173,6 +171,8 @@ class Database():
             '''
             cursor.execute(sql)
 
-
         db.commit()
         db.close()
+    
+    def insert_song_list(self, list_name, songs):
+        pass
