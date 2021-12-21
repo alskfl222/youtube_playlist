@@ -3,7 +3,7 @@ import pymysql
 from dotenv import load_dotenv
 
 class Database():
-    def __init__(self, user):
+    def __init__(self, user_name):
         db = self.connect_init()
         cursor = db.cursor()
 
@@ -13,13 +13,7 @@ class Database():
         for sql in sqls:
             cursor.execute(sql)
 
-        user_id_sql = f'''
-            SELECT * FROM user
-            WHERE name = "{user}";
-        '''
-        cursor.execute(user_id_sql)
-        res = cursor.fetchone()
-        self.user_id = res[0]
+        self.user_id = self.get_user_id(user_name)
 
         db.commit()
         db.close()
@@ -27,7 +21,7 @@ class Database():
         self.get_table_info()
 
         print("DATABASE READY")
-        print(f"USER : {user}")
+        print(f"USER : {user_name}")
     
     def connect_init(self):
         load_dotenv()
@@ -98,34 +92,19 @@ class Database():
         self.table_info = table_info
         db.close()
         return table_info
-
-    def create_list(self, list_item):
+    
+    def get_user_id(self, user_name):
         db = self.connect()
         cursor = db.cursor()
-        sql = f'''
-            SELECT * FROM list
-            WHERE name = "{list_item['name']}"
-            OR href = "{list_item['href']}"
+        user_id_sql = f'''
+            SELECT id FROM user
+            WHERE name = "{user_name}";
         '''
-        cursor.execute(sql)
+        cursor.execute(user_id_sql)
         res = cursor.fetchone()
-        if res:
-            print("Already exists list")
-            return
-        field = [*list_item.keys(), 'user_id']
-        value = [*list_item.values(), self.user_id]
-        sql = f'''
-            INSERT INTO list
-            {self.make_string('field', field)}
-            VALUES
-            {self.make_string('value', value)};
-        '''
-        cursor.execute(sql)
-        db.commit()
         db.close()
-        self.list_id = cursor.lastrowid
-        return self.list_id
-    
+        return res[0]
+
     def get_list_id(self, list_name):
         db = self.connect()
         cursor = db.cursor()
@@ -136,8 +115,19 @@ class Database():
         cursor.execute(sql)
         res = cursor.fetchone()
         db.close()
-        self.list_id = res[0]
-        return self.list_id
+        return res[0]
+
+    def get_song_id(self, song_href):
+        db = self.connect()
+        cursor = db.cursor()
+        sql = f'''
+            SELECT id FROM song
+            WHERE href = "{song_href}"
+        '''
+        cursor.execute(sql)
+        res = cursor.fetchone()
+        db.close()
+        return res[0]
 
     def update_songs(self, BGM_data):
         db = self.connect()
@@ -173,6 +163,27 @@ class Database():
 
         db.commit()
         db.close()
-    
-    def insert_song_list(self, list_name, songs):
-        pass
+
+    def update_list(self, list_item):
+        db = self.connect()
+        cursor = db.cursor()
+        sql = f'''
+            SELECT id FROM list
+            WHERE name = "{list_item[0]}"
+            OR href = "{list_item[1]}"
+        '''
+        cursor.execute(sql)
+        res = cursor.fetchone()
+        if res:
+            print(f"{list_item[0]}: Already exists")
+            return
+        sql = f'''
+            INSERT INTO list
+            (name, href, user_id)
+            VALUES
+            ("{list_item[0]}", "{list_item[1]}", {self.user_id});
+        '''
+        cursor.execute(sql)
+        db.commit()
+        db.close()        
+        return cursor.lastrowid
