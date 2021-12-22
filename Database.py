@@ -135,6 +135,7 @@ class Database():
 
         total_BGM = [y for x in BGM_data.values() for y in x['items']]
         total_BGM = list(dict.fromkeys(total_BGM))
+        print(f"Crawled BGM count: {len(total_BGM)}")
 
         sql = f'''
             SELECT href FROM song
@@ -143,6 +144,9 @@ class Database():
         check = [x[0] for x in cursor.fetchall()]
         insert = [x for x in total_BGM if x[2] not in check]
         deleted = [x for x in check if x not in [y[2] for y in total_BGM]]
+        print(f"Before BGM count: {len(check)}")
+        print(f"New BGM count: {len(insert)}")
+        print(f"Deleted BGM count: {len(deleted)}")
 
         for song in insert:
             sql = f'''
@@ -163,27 +167,37 @@ class Database():
 
         db.commit()
         db.close()
+        print("Songs updated")
+        print("=======================")
 
-    def update_list(self, list_item):
-        db = self.connect()
-        cursor = db.cursor()
-        sql = f'''
-            SELECT id FROM list
-            WHERE name = "{list_item[0]}"
-            OR href = "{list_item[1]}"
-        '''
-        cursor.execute(sql)
-        res = cursor.fetchone()
-        if res:
-            print(f"{list_item[0]}: Already exists")
-            return
-        sql = f'''
-            INSERT INTO list
-            (name, href, user_id)
-            VALUES
-            ("{list_item[0]}", "{list_item[1]}", {self.user_id});
-        '''
-        cursor.execute(sql)
-        db.commit()
-        db.close()        
-        return cursor.lastrowid
+    def update_lists(self, BGM_data):
+        keys = (k for k in BGM_data.keys())
+        values = (v['href'] for v in BGM_data.values())
+        print(f"Crawled list count: {len(BGM_data.keys())}")
+        list_items = zip(keys, values)
+        count = 0
+        for list_item in list_items:
+            db = self.connect()
+            cursor = db.cursor()
+            sql = f'''
+                SELECT id FROM list
+                WHERE href = "{list_item[1]}"
+            '''
+            cursor.execute(sql)
+            res = cursor.fetchone()
+            if res:
+                print(f"{list_item[0]} ({list_item[1]}): Already exists")
+                continue
+            sql = f'''
+                INSERT INTO list
+                (name, href, user_id)
+                VALUES
+                ("{list_item[0]}", "{list_item[1]}", {self.user_id});
+            '''
+            cursor.execute(sql)
+            db.commit()
+            db.close()      
+            count += 1  
+        print(f"Updated list count: {count}")
+        print("Lists updated")
+        print("=======================")

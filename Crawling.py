@@ -77,9 +77,11 @@ class Crawling():
         BGM_items = works.get()
         p.close()
         p.join()
-        print("END crawling")
         BGM_data = { k : {'href' : v1, 'items': v2 } for k, v1, v2 
                     in zip(BGM_lists.keys(), BGM_lists.values(), BGM_items)}
         end = time.time()
+        
         print(f"GET BGM Data from {self.YOUTUBE_CHANNEL} CHANNEL in {'{:.2f}s'.format(end - start)}")
+        print("END crawling")
+        print("=======================")
         return BGM_data
