@@ -129,7 +129,7 @@ class Database():
         db.close()
         return res[0]
 
-    def update_songs(self, BGM_data):
+    def update_song(self, BGM_data):
         db = self.connect()
         cursor = db.cursor()
 
@@ -167,10 +167,10 @@ class Database():
 
         db.commit()
         db.close()
-        print("Songs updated")
+        print("Table song updated")
         print("=======================")
 
-    def update_lists(self, BGM_data):
+    def update_list(self, BGM_data):
         keys = (k for k in BGM_data.keys())
         values = (v['href'] for v in BGM_data.values())
         print(f"Crawled list count: {len(BGM_data.keys())}")
@@ -199,5 +199,9 @@ class Database():
             db.close()      
             count += 1  
         print(f"Updated list count: {count}")
-        print("Lists updated")
+        print("Table list updated")
         print("=======================")
+
+    def update_song_list(self, BGM_data):
+        pass
+
