@@ -203,5 +203,6 @@ class Database():
         print("=======================")
 
     def update_song_list(self, BGM_data):
+        song_id = self.get_song_id()
         pass
 
