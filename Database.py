@@ -174,31 +174,46 @@ class Database():
         keys = (k for k in BGM_data.keys())
         values = (v['href'] for v in BGM_data.values())
         print(f"Crawled list count: {len(BGM_data.keys())}")
-        list_items = zip(keys, values)
-        count = 0
-        for list_item in list_items:
-            db = self.connect()
-            cursor = db.cursor()
+        list_items = list(zip(keys, values))
+
+        db = self.connect()
+        cursor = db.cursor()
+        sql = f'''
+            SELECT name, href FROM list
+        '''
+        cursor.execute(sql)
+        exist = [(x[0], x[1]) for x in cursor.fetchall()]
+        insert = [(x[0], x[1]) for x in list_items if x[1] not in [y[1] for y in exist]]
+        deleted = [x for x in exist if x[1] not in [y[1] for y in list_items]]
+
+        insert_count = 0
+        for item in insert:
             sql = f'''
-                SELECT id FROM list
-                WHERE href = "{list_item[1]}"
-            '''
-            cursor.execute(sql)
-            res = cursor.fetchone()
-            if res:
-                print(f"{list_item[0]} ({list_item[1]}): Already exists")
-                continue
-            sql = f'''
-                INSERT INTO list
+                INSERT INTO item
                 (name, href, user_id)
                 VALUES
-                ("{list_item[0]}", "{list_item[1]}", {self.user_id});
+                ("{item[0]}", "{item[1]}", {self.user_id});
             '''
+            print(f"{item[0]} ({item[1]}): inserted")
+            cursor.execute(sql)    
+            insert_count += 1
+        
+        deleted_count = 0
+        for item in deleted:
+            sql = f'''
+                UPDATE item
+                SET deleted = 1
+                WHERE href = "{item[1]}"
+                AND deleted = 0
+            '''
+            print(f"{item[0]} ({item[1]}): deleted")
             cursor.execute(sql)
-            db.commit()
-            db.close()      
-            count += 1  
-        print(f"Updated list count: {count}")
+            deleted_count += 1
+
+        db.commit()
+        db.close()  
+        print(f"Inserted list count: {insert_count}")
+        print(f"Deleted list count: {deleted_count}")
         print("Table list updated")
         print("=======================")
 
