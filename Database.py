@@ -70,28 +70,6 @@ class Database():
         string = string[:-2]
         string += ')'
         return string
-
-    def get_table_info(self):
-        db = self.connect()
-        cursor = db.cursor()
-        sql = f'''
-            SHOW tables;
-        '''
-        cursor.execute(sql)
-        table_info = {}
-        tables = [x[0] for x in cursor.fetchall()]
-        for table in tables:
-            sql = f'''
-                DESCRIBE {table};
-            '''
-            cursor.execute(sql)
-            res = cursor.fetchall()
-            field1 = [x[0] for x in res if x[3] != 'MUL' and x[4] == None and x[5] == '']
-            field2 = [x[0] for x in res if x[3] == 'MUL']
-            table_info[table] = (field1, field2)
-        self.table_info = table_info
-        db.close()
-        return table_info
     
     def get_user_id(self, user_name):
         db = self.connect()
@@ -189,7 +167,7 @@ class Database():
         insert_count = 0
         for item in insert:
             sql = f'''
-                INSERT INTO item
+                INSERT INTO list
                 (name, href, user_id)
                 VALUES
                 ("{item[0]}", "{item[1]}", {self.user_id});
@@ -201,7 +179,7 @@ class Database():
         deleted_count = 0
         for item in deleted:
             sql = f'''
-                UPDATE item
+                UPDATE list
                 SET deleted = 1
                 WHERE href = "{item[1]}"
                 AND deleted = 0
