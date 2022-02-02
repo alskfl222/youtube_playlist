@@ -18,8 +18,6 @@ class Database():
         db.commit()
         db.close()
 
-        self.get_table_info()
-
         print("DATABASE READY")
         print(f"USER : {user_name}")
     
@@ -80,6 +78,16 @@ class Database():
         '''
         cursor.execute(user_id_sql)
         res = cursor.fetchone()
+        if not res:
+            sql = f'''
+                INSERT INTO user
+                (name, email)
+                VALUES
+                ("{user_name}", "{user_name}@test.com")
+            '''
+            cursor.execute(sql)
+            db.commit()
+            return cursor.lastrowid
         db.close()
         return res[0]
 
@@ -196,6 +204,30 @@ class Database():
         print("=======================")
 
     def update_song_list(self, BGM_data):
-        song_id = self.get_song_id()
-        pass
-
+        for list in BGM_data.keys():
+            list_id = self.get_list_id(list)
+            crawled_songs = [x[2] for x in BGM_data[list]['items']]
+            db = self.connect()
+            cursor = db.cursor()
+            sql = f'''
+                SELECT song.href FROM song_list
+                JOIN song ON song_list.song_id = song.id
+                JOIN list ON song_list.list_id = list.id
+                WHERE list.id = {list_id}
+            '''
+            cursor.execute(sql)
+            exist_songs = [x[0] for x in cursor.fetchall()]
+            insert_songs = [x for x in crawled_songs if x not in exist_songs]
+            print(f"{list} : {len(insert_songs)} songs added")
+            for song_href in insert_songs:
+                song_id = self.get_song_id(song_href)
+                print(song_id, list_id)
+                sql = f'''
+                    INSERT INTO song_list
+                    (song_id, list_id)
+                    VALUES
+                    ({song_id}, {list_id});
+                '''
+                cursor.execute(sql)
+            db.commit()
+            db.close()

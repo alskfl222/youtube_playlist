@@ -49,6 +49,6 @@ CREATE TABLE IF NOT EXISTS song_list (
     song_id int NOT NULL,
     list_id int NOT NULL,
 
-    FOREIGN KEY (song_id) REFERENCES user (id) ON UPDATE CASCADE,
+    FOREIGN KEY (song_id) REFERENCES song (id) ON UPDATE CASCADE,
     FOREIGN KEY (list_id) REFERENCES list (id) ON UPDATE CASCADE
 ) CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
