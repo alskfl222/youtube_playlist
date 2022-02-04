@@ -221,7 +221,6 @@ class Database():
             print(f"{list} : {len(insert_songs)} songs added")
             for song_href in insert_songs:
                 song_id = self.get_song_id(song_href)
-                print(song_id, list_id)
                 sql = f'''
                     INSERT INTO song_list
                     (song_id, list_id)
