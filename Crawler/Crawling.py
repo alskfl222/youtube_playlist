@@ -12,10 +12,9 @@ from webdriver_manager.chrome import ChromeDriverManager
 from pyvirtualdisplay import Display
 
 os.environ['WDM_LOG_LEVEL'] = '0'
-YOUTUBE_CHANNEL = '날림v'
 
 class Crawling():
-    def __init__(self):
+    def __init__(self, YOUTUBE_CHANNEL):
         self.YOUTUBE_CHANNEL = YOUTUBE_CHANNEL
 
         display = Display(visible=0, size=(1280, 1024))
@@ -25,6 +24,8 @@ class Crawling():
         service = Service(ChromeDriverManager().install())
         options = webdriver.ChromeOptions()
         options.add_argument("headless")
+        options.add_argument("--no-sandbox")
+        options.add_argument('--disable-dev-shm-usage')
         options.add_argument("--log-level=3")
         driver = webdriver.Chrome(service=service, options=options)
         driver.set_window_size(1280, 1024)
@@ -79,6 +80,7 @@ class Crawling():
         BGM_items = []
         for BGM_list in BGM_lists.items():
             BGM_items.append(self.get_list_items(BGM_list))
+            break
         BGM_data = { k : {'href' : v1, 'items': v2 } for k, v1, v2 
                     in zip(BGM_lists.keys(), BGM_lists.values(), BGM_items)}
         end = time.time()
@@ -94,7 +96,7 @@ class Crawling():
         start = time.time()
         BGM_lists = self.get_BGM_lists()
         p = multiprocessing.Pool(workers)
-        works = p.map_async(self.get_list_items, BGM_lists.items())
+        works = p.map_async(self.get_list_items, (BGM_lists.items(),))
         BGM_items = works.get()
         p.close()
         p.join()
