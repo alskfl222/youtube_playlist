@@ -80,7 +80,6 @@ class Crawling():
         BGM_items = []
         for BGM_list in BGM_lists.items():
             BGM_items.append(self.get_list_items(BGM_list))
-            break
         BGM_data = { k : {'href' : v1, 'items': v2 } for k, v1, v2 
                     in zip(BGM_lists.keys(), BGM_lists.values(), BGM_items)}
         end = time.time()

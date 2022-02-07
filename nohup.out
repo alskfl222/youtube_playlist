@@ -1,0 +1,45 @@
+2022/02/07 20:50:28 current FDs rlimit set to 1048576, wanted limit is 8500. Nothing to do here.
+2022/02/07 20:51:44 current FDs rlimit set to 1048576, wanted limit is 8500. Nothing to do here.
+2022/02/07 20:51:45 Listening on 127.0.0.1:3306 for youtube-playlist-332414:asia-northeast3:yb-db
+2022/02/07 20:51:45 Ready for new connections
+2022/02/07 20:51:45 Generated RSA key in 242.3627ms
+2022/02/07 20:51:49 New connection for "youtube-playlist-332414:asia-northeast3:yb-db"
+2022/02/07 20:51:49 refreshing ephemeral certificate for instance youtube-playlist-332414:asia-northeast3:yb-db
+2022/02/07 20:51:49 Scheduling refresh of ephemeral certificate in 55m4.5509884s
+2022/02/07 20:51:50 New connection for "youtube-playlist-332414:asia-northeast3:yb-db"
+2022/02/07 20:51:50 Client closed local connection on 127.0.0.1:3306
+2022/02/07 20:51:50 Client closed local connection on 127.0.0.1:3306
+2022/02/07 20:51:50 New connection for "youtube-playlist-332414:asia-northeast3:yb-db"
+2022/02/07 20:51:50 Client closed local connection on 127.0.0.1:3306
+2022/02/07 21:46:54 ephemeral certificate for instance youtube-playlist-332414:asia-northeast3:yb-db will expire soon, refreshing now.
+2022/02/07 21:46:54 refreshing ephemeral certificate for instance youtube-playlist-332414:asia-northeast3:yb-db
+2022/02/07 21:47:07 Scheduling refresh of ephemeral certificate in 55m5.0287234s
+2022/02/07 22:42:13 ephemeral certificate for instance youtube-playlist-332414:asia-northeast3:yb-db will expire soon, refreshing now.
+2022/02/07 22:42:13 refreshing ephemeral certificate for instance youtube-playlist-332414:asia-northeast3:yb-db
+2022/02/07 22:42:14 Scheduling refresh of ephemeral certificate in 55m4.3856423s
+2022/02/07 23:37:19 ephemeral certificate for instance youtube-playlist-332414:asia-northeast3:yb-db will expire soon, refreshing now.
+2022/02/07 23:37:19 refreshing ephemeral certificate for instance youtube-playlist-332414:asia-northeast3:yb-db
+2022/02/07 23:37:19 Scheduling refresh of ephemeral certificate in 55m4.452585s
+2022/02/07 23:41:59 New connection for "youtube-playlist-332414:asia-northeast3:yb-db"
+2022/02/07 23:48:42 New connection for "youtube-playlist-332414:asia-northeast3:yb-db"
+2022/02/07 23:48:42 New connection for "youtube-playlist-332414:asia-northeast3:yb-db"
+2022/02/07 23:48:42 Client closed local connection on 127.0.0.1:3306
+2022/02/07 23:48:42 Client closed local connection on 127.0.0.1:3306
+2022/02/07 23:48:42 New connection for "youtube-playlist-332414:asia-northeast3:yb-db"
+2022/02/07 23:48:42 Client closed local connection on 127.0.0.1:3306
+2022/02/07 23:49:10 New connection for "youtube-playlist-332414:asia-northeast3:yb-db"
+2022/02/07 23:49:21 Client closed local connection on 127.0.0.1:3306
+2022/02/07 23:49:21 New connection for "youtube-playlist-332414:asia-northeast3:yb-db"
+2022/02/07 23:49:21 Client closed local connection on 127.0.0.1:3306
+2022/02/07 23:49:21 New connection for "youtube-playlist-332414:asia-northeast3:yb-db"
+2022/02/07 23:49:21 Client closed local connection on 127.0.0.1:3306
+2022/02/07 23:49:21 New connection for "youtube-playlist-332414:asia-northeast3:yb-db"
+2022/02/07 23:49:21 New connection for "youtube-playlist-332414:asia-northeast3:yb-db"
+2022/02/07 23:49:21 Client closed local connection on 127.0.0.1:3306
+2022/02/07 23:49:21 Client closed local connection on 127.0.0.1:3306
+2022/02/07 23:53:40 New connection for "youtube-playlist-332414:asia-northeast3:yb-db"
+2022/02/07 23:53:41 New connection for "youtube-playlist-332414:asia-northeast3:yb-db"
+2022/02/07 23:53:41 Client closed local connection on 127.0.0.1:3306
+2022/02/07 23:53:41 Client closed local connection on 127.0.0.1:3306
+2022/02/07 23:53:41 New connection for "youtube-playlist-332414:asia-northeast3:yb-db"
+2022/02/07 23:53:41 Client closed local connection on 127.0.0.1:3306

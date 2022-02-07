@@ -1,9 +1,11 @@
 import os
+import datetime
 import pymysql
 from dotenv import load_dotenv
 
 class Database():
     def __init__(self, user_name):
+        print("DATABASE INIT")
         db = self.connect_init()
         cursor = db.cursor()
 
@@ -53,6 +55,42 @@ class Database():
                 charset='utf8mb4'
         )
         return db
+
+    def check_log(self):
+        today = datetime.datetime.today()
+        db = self.connect()
+        cursor = db.cursor()
+        sql = f'''
+            SELECT log_at FROM date_log
+            ORDER BY id DESC LIMIT 1;
+        '''
+        cursor.execute(sql)
+        res = cursor.fetchone()
+        if res:
+            check = res[0]
+            print(f"TODAY : {today.strftime('%Y-%m-%d')}")
+            print(f"CHECK LOG : {today.strftime('%Y-%m-%d') == check.strftime('%Y-%m-%d')}")
+            db.close()
+            return today.strftime('%Y-%m-%d') == check.strftime('%Y-%m-%d')
+        else:
+            print(f"TODAY : {today.strftime('%Y-%m-%d')}")
+            print(f"CHECK LOG : false")
+            db.close()
+            return False
+
+    def record_log(self):
+        db = self.connect()
+        cursor = db.cursor()
+        sql = f'''
+            INSERT INTO date_log
+            (log_at)
+            VALUES
+            (DEFAULT);
+        '''
+        cursor.execute(sql)
+        db.commit()
+        db.close()
+        print(f"RECORD CURRENT TIMESTAMP")
 
     def make_string(self, type, iterable):
         string = '('
