@@ -1,5 +1,9 @@
 __pycache__
+node_modules
+
 .env
 temp.txt
+package-lock.json
+yarn.lock
 *.fig:Zone.Identifier
 nohup.out
