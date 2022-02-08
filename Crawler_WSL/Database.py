@@ -67,7 +67,8 @@ class Database():
         cursor.execute(sql)
         res = cursor.fetchone()
         if res:
-            check = res[0]
+            time_UTC = res[0]
+            check = time_UTC + datetime.timedelta(hours=9)
             print(f"TODAY : {today.strftime('%Y-%m-%d')}")
             print(f"CHECK LOG : {today.strftime('%Y-%m-%d') == check.strftime('%Y-%m-%d')}")
             db.close()
