@@ -1,2 +1,0 @@
-2022/02/09 02:28:11 current FDs rlimit set to 1048576, wanted limit is 8500. Nothing to do here.
-2022/02/09 02:28:12 listen tcp 127.0.0.1:3306: bind: address already in use

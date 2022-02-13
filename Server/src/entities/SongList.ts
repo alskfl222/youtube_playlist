@@ -9,8 +9,8 @@ import {
 import { Song } from "./Song";
 import { List } from "./List";
 
-@Index("song_id", ["songId"], {})
 @Index("list_id", ["listId"], {})
+@Index("song_id", ["songId"], {})
 @Entity("song_list", { schema: "test" })
 export class SongList {
   @PrimaryGeneratedColumn({ type: "int", name: "id" })

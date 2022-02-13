@@ -7,9 +7,9 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from "typeorm";
-import { User } from "./User";
-import { UserList } from "./UserList";
 import { SongList } from "./SongList";
+import { UserList } from "./UserList";
+import { User } from "./User";
 
 @Index("user_id", ["userId"], {})
 @Entity("list", { schema: "test" })
@@ -32,16 +32,16 @@ export class List {
   @Column("tinyint", { name: "deleted", width: 1, default: () => "'0'" })
   deleted: boolean;
 
+  @OneToMany(() => SongList, (songList) => songList.list)
+  songLists: SongList[];
+
+  @OneToMany(() => UserList, (userList) => userList.list)
+  userLists: UserList[];
+
   @ManyToOne(() => User, (user) => user.lists, {
     onDelete: "NO ACTION",
     onUpdate: "CASCADE",
   })
   @JoinColumn([{ name: "user_id", referencedColumnName: "id" }])
   user: User;
-
-  @OneToMany(() => UserList, (userList) => userList.list)
-  userLists: UserList[];
-
-  @OneToMany(() => SongList, (songList) => songList.list)
-  songLists: SongList[];
 }

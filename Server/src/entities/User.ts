@@ -1,6 +1,6 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import { List } from "./List";
 import { UserList } from "./UserList";
+import { List } from "./List";
 
 @Entity("user", { schema: "test" })
 export class User {
@@ -13,9 +13,9 @@ export class User {
   @Column("varchar", { name: "email", nullable: true, length: 180 })
   email: string | null;
 
-  @OneToMany(() => List, (list) => list.user)
-  lists: List[];
-
   @OneToMany(() => UserList, (userList) => userList.user)
   userLists: UserList[];
+
+  @OneToMany(() => List, (list) => list.user)
+  lists: List[];
 }

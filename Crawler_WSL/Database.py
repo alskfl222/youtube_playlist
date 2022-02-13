@@ -183,6 +183,7 @@ class Database():
             cursor.execute(sql)
 
         for song in deleted:
+            print(song)
             sql = f'''
                 UPDATE song
                 SET deleted = 1
