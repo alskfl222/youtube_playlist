@@ -1,27 +1,30 @@
 import 'reflect-metadata';
 
 import { createConnection } from 'typeorm';
-import * as express from 'express';
-import 'dotenv/config';
+import express from 'express';
+import cors from 'cors'
+// const cookieParser = require('cookie-parser');
 
-import { Song } from './entities/Song'
+import router from './routes'
+
+import 'dotenv/config';
 
 createConnection()
   .then(async (connection) => {
     console.log('DATABASE CONNECTED');
-    return connection
-  })
-  .then(async (connection) => {
-    const songs = await connection.manager.find(Song);
-    console.log(songs)
+
+    const app = express();
+    app.set('port', process.env.SERVER_PORT || 4000)
+    app.use(cors())
+    app.use(express.json());
+
+    app.use('/', router)
+
+    app.listen(app.get('port'), () => {
+        console.log(`SERVER listens on PORT ${app.get('port')}`)
+    })
   })
   .catch((error) => console.log(error));
 
 
 
-const app = express();
-app.set('port', process.env.SERVER_PORT || 4000)
-
-app.listen(app.get('port'), () => {
-    console.log(`SERVER listens on PORT ${app.get('port')}`)
-})
