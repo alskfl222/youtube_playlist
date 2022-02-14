@@ -2,9 +2,10 @@ import { Request, Response } from 'express';
 import { sign, verify } from 'jsonwebtoken';
 
 interface tokenData {
-  id: number;
-  name: string;
-  email: string;
+  id?: number;
+  name?: string;
+  email?: string;
+  token?: object;
 }
 
 export default {
@@ -21,7 +22,7 @@ export default {
     if (!authorization) {
       return null;
     }
-    const accessToken = authorization.split('Bearer ')[1]
+    const accessToken = authorization.split('Bearer ')[1];
     try {
       return verify(accessToken, process.env.ACCESS_SECRET);
     } catch (err) {

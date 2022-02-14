@@ -3,7 +3,6 @@ import 'reflect-metadata';
 import { createConnection } from 'typeorm';
 import express from 'express';
 import cors from 'cors'
-// const cookieParser = require('cookie-parser');
 
 import router from './routes'
 

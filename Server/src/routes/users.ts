@@ -4,8 +4,7 @@ import { usersController } from '../controllers';
 
 const router = express.Router();
 
-router.post('/login', usersController.login);
-
-router.get('/verify', usersController.verify)
+router.get('/login', usersController.login);
+router.get('/login/callback', usersController.callback)
 
 export default router;
