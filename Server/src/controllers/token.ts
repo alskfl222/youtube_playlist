@@ -2,9 +2,9 @@ import { Request, Response } from 'express';
 import { sign, verify } from 'jsonwebtoken';
 
 interface tokenData {
-  id?: number;
-  name?: string;
-  email?: string;
+  id: number;
+  name: string;
+  email: string;
   token?: object;
 }
 

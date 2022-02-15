@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { getConnection } from 'typeorm';
+
 import { google } from 'googleapis';
 import { GetTokenOptions } from 'google-auth-library';
 
@@ -45,8 +46,7 @@ const usersController = {
       oauth2Client.setCredentials(tokens);
       const oauth2 = google.oauth2({ auth: oauth2Client, version: 'v2' });
       const userinfo = await oauth2.userinfo.get();
-      const connection = await getConnection();
-      const queryBuilder = await connection.createQueryBuilder(User, 'user');
+      const queryBuilder = await getConnection().createQueryBuilder(User, 'user');
       const check = await queryBuilder
         .where('user.email = :email', { email: userinfo.data.email })
         .getOne();
@@ -74,8 +74,7 @@ const usersController = {
         console.log('기존 회원 로그인');
         tokenData['id'] = check.id;
       }
-      
-      console.log(tokenData)
+
       const accessToken = token.generateAccessToken(tokenData)
       delete tokenData['token']
       token.sendAccessToken(res, tokenData, accessToken)
