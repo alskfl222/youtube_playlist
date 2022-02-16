@@ -2,7 +2,8 @@ import { Request, Response, NextFunction } from 'express';
 import { getConnection } from 'typeorm';
 
 import { google } from 'googleapis';
-import { GetTokenOptions } from 'google-auth-library';
+
+import axios from 'axios'
 
 import token from './token';
 
@@ -10,6 +11,10 @@ import { User } from '../entities/User';
 
 import 'dotenv/config';
 
+
+const REDIRECT_URI = `${process.env.CLIENT_DOMAIN}:${process.env.CLIENT_PORT}/callback`
+
+// const authURL = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${process.env.GOOGLE_CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code&scope=https://www.googleapis.com/auth/userinfo.profile&scope=https://www.googleapis.com/auth/userinfo.email&scope=https://www.googleapis.com/auth/youtube.readonly`
 const oauth2Client = new google.auth.OAuth2(
   process.env.GOOGLE_CLIENT_ID,
   process.env.GOOGLE_CLIENT_SECRET,
@@ -38,28 +43,48 @@ const usersController = {
   },
   login: async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const authorizationCode: GetTokenOptions['code'] = req.body
-        .code as string;
-      const { tokens } = await oauth2Client.getToken(authorizationCode);
-      oauth2Client.setCredentials(tokens);
-      const oauth2 = google.oauth2({ auth: oauth2Client, version: 'v2' });
-      const userinfo = await oauth2.userinfo.get();
+      console.log('LOGIN')
+      const code: string = req.body.code;
+      const tokenResponse = await axios({
+        method: 'POST',
+        url: `https://oauth2.googleapis.com/token?code=${code}&client_id=${process.env.GOOGLE_CLIENT_ID}&client_secret=${process.env.GOOGLE_CLIENT_SECRET}&redirect_uri=${REDIRECT_URI}&grant_type=authorization_code`,
+        headers: {
+          'Content-type': 'application/x-www-form-urlencoded',
+          Accept: 'application/json',
+          withCredentials: true,
+        },
+      });
+      console.log("data : ", tokenResponse.data)
+      const { google_access_token } = tokenResponse.data;
+
+      const googleUserInfoResponse = await axios({
+        method: 'GET',
+        url: `https://www.googleapis.com/oauth2/v2/userinfo?access_token=${google_access_token}`,
+        headers: {
+          Authorization: `Bearer ${google_access_token}`,
+          'Content-type': 'application/x-www-form-urlencoded',
+          withCredentials: true,
+        },
+      });
+
+      const googleUserInfo = googleUserInfoResponse.data
+      console.log(googleUserInfo)
+
       const queryBuilder = await getConnection().createQueryBuilder(
         User,
         'user'
       );
       const check = await queryBuilder
-        .where('user.email = :email', { email: userinfo.data.email })
+        .where('user.email = :email', { email: googleUserInfo.email })
         .getOne();
 
       const tokenData = {
         id: -1,
-        name: userinfo.data.name,
-        email: userinfo.data.email,
+        name: googleUserInfo.name,
+        email: googleUserInfo.email,
         token: {
           youtube: {
-            access_token: tokens.access_token,
-            refresh_token: tokens.refresh_token,
+            access_token: google_access_token,
           },
         },
       };
@@ -67,7 +92,7 @@ const usersController = {
         const insert = await queryBuilder
           .insert()
           .into(User)
-          .values([{ name: userinfo.data.name, email: userinfo.data.email }])
+          .values([{ name: googleUserInfo.name, email: googleUserInfo.email }])
           .execute();
         console.log('새로운 계정 추가');
         tokenData['id'] = insert.raw.insertId;
