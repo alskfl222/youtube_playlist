@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
 const NavigationContainer = styled.div`
@@ -16,10 +17,21 @@ const NavigationContainer = styled.div`
   font-weight: 700;
 `;
 
+const HomeBtn = styled.button`
+  border: none;
+  background: transparent;
+  text-align: center;
+  line-height: 4rem;
+  color: white;
+  font-size: 2rem;
+  cursor: pointer;
+`
+
 const Nav = () => {
+  const navigate = useNavigate()
   return (
     <NavigationContainer>
-      YOUTUBE-PLAYLIST NAV
+      <HomeBtn onClick={() => navigate('/')}>NAV</HomeBtn>
     </NavigationContainer>
   )
 }

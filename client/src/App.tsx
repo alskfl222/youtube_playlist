@@ -9,11 +9,12 @@ import Callback from './pages/Callback';
 import Lists from './pages/Lists';
 
 const Container = styled.div`
-  height: 50vh;
+  width: 100vw;
+  min-width: 320px;
+  max-width: 992px;
   min-height: 720px;
+  padding: 5rem 1rem 0 1rem;
   display: flex;
-  justify-content: center;
-  align-items: center;
 `;
 
 function App() {
@@ -21,15 +22,17 @@ function App() {
   return (
     <Container>
       <Nav />
-      <Routes>
-        <Route path='/' element={<Home isLogin={isLogin} />} />
-        <Route path='/login' element={<Login />} />
-        <Route
-          path='/callback'
-          element={<Callback isLogin={isLogin} setIsLogin={setIsLogin} />}
-        />
-        <Route path='/lists' element={<Lists />} />
-      </Routes>
+      <main>
+        <Routes>
+          <Route path='/' element={<Home isLogin={isLogin} />} />
+          <Route path='/login' element={<Login />} />
+          <Route
+            path='/callback'
+            element={<Callback isLogin={isLogin} setIsLogin={setIsLogin} />}
+          />
+          <Route path='/lists' element={<Lists />} />
+        </Routes>
+      </main>
     </Container>
   );
 }
