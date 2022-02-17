@@ -18,12 +18,13 @@ createConnection()
     app.use(express.urlencoded({ extended: true }));
     app.use(express.json());
     app.use(cookieParser());
-    app.use(cors({
-      origin: "*",
-      credentials: true,
-      methods: ['GET', 'POST', 'OPTIONS', 'PATCH'],
-    }))
-    app.use(express.json());
+    app.use(
+      cors({
+        origin: true,
+        credentials: true,
+        methods: ['GET', 'POST', 'OPTIONS', 'PATCH'],
+      })
+    )
 
     app.use('/', router)
 

@@ -17,7 +17,7 @@ export default {
     res.cookie('authorization', `Bearer ${accessToken}`, {
       // domain: process.env.SERVER_DOMAIN,
       path: '/',
-      maxAge: 60 * 60 * 1000,
+      maxAge: 10 * 60 * 60 * 1000, // 1 + 9 hr
       // sameSite: 'none',
       // secure: true,
       httpOnly: true,

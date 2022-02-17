@@ -14,15 +14,20 @@ const Callback = (props: any) => {
 
   useEffect(() => {
     if (isLogin) {
-      setTimeout(() => navigate('/lists'), 20000);
+      setTimeout(() => navigate('/lists'), 10000);
     }
   }, [isLogin]);
 
   useEffect(() => {
     axios
-      .post(`${process.env.REACT_APP_API_URL}/users/login`, { code })
+      .post(
+        `${process.env.REACT_APP_API_URL}/users/login`,
+        { code },
+        { withCredentials: true }
+      )
       .then((result) => {
-        setIsLogin(true)
+        setIsLogin(true);
+        localStorage.setItem('isLogin', 'true')
       });
   }, []);
 

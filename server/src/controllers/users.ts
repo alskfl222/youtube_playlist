@@ -3,7 +3,7 @@ import { getConnection } from 'typeorm';
 
 import { google } from 'googleapis';
 
-import axios from 'axios'
+// import axios from 'axios'
 
 import token from './token';
 
@@ -11,10 +11,9 @@ import { User } from '../entities/User';
 
 import 'dotenv/config';
 
-
-const REDIRECT_URI = `${process.env.CLIENT_DOMAIN}:${process.env.CLIENT_PORT}/callback`
-
+// const REDIRECT_URI = `${process.env.CLIENT_DOMAIN}:${process.env.CLIENT_PORT}/callback`
 // const authURL = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${process.env.GOOGLE_CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code&scope=https://www.googleapis.com/auth/userinfo.profile&scope=https://www.googleapis.com/auth/userinfo.email&scope=https://www.googleapis.com/auth/youtube.readonly`
+
 const oauth2Client = new google.auth.OAuth2(
   process.env.GOOGLE_CLIENT_ID,
   process.env.GOOGLE_CLIENT_SECRET,
@@ -26,7 +25,7 @@ const authURL = oauth2Client.generateAuthUrl({
   scope: [
     'https://www.googleapis.com/auth/userinfo.profile',
     'https://www.googleapis.com/auth/userinfo.email',
-    'https://www.googleapis.com/auth/youtube.readonly',
+    // 'https://www.googleapis.com/auth/youtube.readonly',
   ],
 });
 
@@ -43,32 +42,38 @@ const usersController = {
   },
   login: async (req: Request, res: Response, next: NextFunction) => {
     try {
-      console.log('LOGIN')
+      console.log('LOGIN START')
       const code: string = req.body.code;
-      const tokenResponse = await axios({
-        method: 'POST',
-        url: `https://oauth2.googleapis.com/token?code=${code}&client_id=${process.env.GOOGLE_CLIENT_ID}&client_secret=${process.env.GOOGLE_CLIENT_SECRET}&redirect_uri=${REDIRECT_URI}&grant_type=authorization_code`,
-        headers: {
-          'Content-type': 'application/x-www-form-urlencoded',
-          Accept: 'application/json',
-          withCredentials: true,
-        },
-      });
-      console.log("data : ", tokenResponse.data)
-      const { google_access_token } = tokenResponse.data;
+      // const tokenResponse = await axios({
+      //   method: 'POST',
+      //   url: `https://oauth2.googleapis.com/token?code=${code}&client_id=${process.env.GOOGLE_CLIENT_ID}&client_secret=${process.env.GOOGLE_CLIENT_SECRET}&redirect_uri=${REDIRECT_URI}&grant_type=authorization_code`,
+      //   headers: {
+      //     'Content-type': 'application/x-www-form-urlencoded',
+      //     Accept: 'application/json',
+      //     withCredentials: true,
+      //   },
+      // });
+      // console.log("data : ", tokenResponse.data)
+      // const { token } = tokenResponse.data;
 
-      const googleUserInfoResponse = await axios({
-        method: 'GET',
-        url: `https://www.googleapis.com/oauth2/v2/userinfo?access_token=${google_access_token}`,
-        headers: {
-          Authorization: `Bearer ${google_access_token}`,
-          'Content-type': 'application/x-www-form-urlencoded',
-          withCredentials: true,
-        },
-      });
+      // const googleUserInfoResponse = await axios({
+      //   method: 'GET',
+      //   url: `https://www.googleapis.com/oauth2/v2/userinfo?access_token=${token}`,
+      //   headers: {
+      //     Authorization: `Bearer ${token}`,
+      //     'Content-type': 'application/x-www-form-urlencoded',
+      //     withCredentials: true,
+      //   },
+      // });
+
+      const { tokens } = await oauth2Client.getToken(code);
+      console.log("Get TOKENS")
+      oauth2Client.setCredentials(tokens);
+      const oauth2 = google.oauth2({ auth: oauth2Client, version: 'v2' });
+      const googleUserInfoResponse = await oauth2.userinfo.get();
 
       const googleUserInfo = googleUserInfoResponse.data
-      console.log(googleUserInfo)
+      console.log("Get USERINFO")
 
       const queryBuilder = await getConnection().createQueryBuilder(
         User,
@@ -82,11 +87,15 @@ const usersController = {
         id: -1,
         name: googleUserInfo.name,
         email: googleUserInfo.email,
-        token: {
-          youtube: {
-            access_token: google_access_token,
-          },
-        },
+        // token: {
+        //   // youtube: {
+        //   //   access_token: token,
+        //   // }
+        //   youtube: {
+        //     access_token: tokens.access_token,
+        //     refresh_token: tokens.refresh_token || null,
+        //   },
+        // },
       };
       if (!check) {
         const insert = await queryBuilder
@@ -102,7 +111,7 @@ const usersController = {
       }
 
       const accessToken = token.generateAccessToken(tokenData);
-      delete tokenData['token'];
+      // delete tokenData['token'];
       token.sendAccessToken(res, tokenData, accessToken);
     } catch (err) {
       res.status(500).send({
