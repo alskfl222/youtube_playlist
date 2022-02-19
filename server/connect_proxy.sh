@@ -1,0 +1,1 @@
+nohup ./cloud_sql_proxy -instances=youtube-playlist-332414:asia-northeast3:yb-db=tcp:3306 > /dev/null 2>&1 &

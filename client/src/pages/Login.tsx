@@ -17,7 +17,7 @@ const LoginLink = styled.a`
 const Login = () => {
   return (
     <Container>
-      <LoginLink href={"http://localhost:4000/users/auth"}>GOOGLE LOGIN</LoginLink>
+      <LoginLink href={`${process.env.REACT_APP_API_URL}/users/auth`}>GOOGLE LOGIN</LoginLink>
     </Container>
   )
 }

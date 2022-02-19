@@ -11,7 +11,7 @@ import Lists from './pages/Lists';
 const Container = styled.div`
   width: 100vw;
   min-width: 320px;
-  max-width: 992px;
+  max-width: calc(960px + 2rem);
   min-height: 720px;
   padding: 5rem 1rem 0 1rem;
   display: flex;
