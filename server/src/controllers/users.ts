@@ -3,8 +3,6 @@ import { getConnection } from 'typeorm';
 
 import { google } from 'googleapis';
 
-import axios from 'axios'
-
 import token from './token';
 
 import { User } from '../entities/User';
@@ -14,7 +12,7 @@ import 'dotenv/config';
 const oauth2Client = new google.auth.OAuth2(
   process.env.GOOGLE_CLIENT_ID,
   process.env.GOOGLE_CLIENT_SECRET,
-  `${process.env.CLIENT_DOMAIN}:${process.env.CLIENT_PORT}/callback`
+  `${process.env.CLIENT_DOMAIN}/callback`  // callback 주소
 );
 
 const authURL = oauth2Client.generateAuthUrl({
