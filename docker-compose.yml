@@ -13,5 +13,6 @@ services:
     entrypoint: ["/bin/sh", "-c"]
     command:
       - |
-        /server/connect_proxy.sh
+        /server/connect_proxy.sh 
+        sleep 5s
         /server/start_server.sh

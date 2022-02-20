@@ -1,15 +1,15 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-const Home = (props: any) => {
-  const { isLogin } = props
+
+const Home = () => {
   const navigate = useNavigate()
 
   useEffect(() => {
-    if (!isLogin) {
-      navigate('/login')
-    } else {
+    if (!!localStorage.getItem('isLogin')) {
       navigate('/lists')
+    } else {
+      navigate('/login')
     }
   })
 

@@ -4,8 +4,7 @@ import axios from 'axios';
 import QueryString from 'qs';
 // import styled from 'styled-components';
 
-const Callback = (props: any) => {
-  const { isLogin, setIsLogin } = props;
+const Callback = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const code = QueryString.parse(location.search, {
@@ -13,11 +12,11 @@ const Callback = (props: any) => {
   }).code;
 
   useEffect(() => {
-    if (isLogin) {
+    if (!!localStorage.getItem('isLogin')) {
       setTimeout(() => navigate('/lists'), 3000);
     }
   // eslint-disable-next-line
-  }, [isLogin]);
+  }, []);
 
   useEffect(() => {
     axios
@@ -27,7 +26,6 @@ const Callback = (props: any) => {
         { withCredentials: true }
       )
       .then((result) => {
-        setIsLogin(true);
         localStorage.setItem('isLogin', 'true')
       });
   // eslint-disable-next-line

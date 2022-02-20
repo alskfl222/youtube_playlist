@@ -28,25 +28,25 @@ const Lists = () => {
 
   useEffect(() => {
     if (!localStorage.getItem('isLogin')) {
-      navigate('/');
+      navigate('/login');
     }
-    axios
-      .get(`${process.env.REACT_APP_API_URL}/lists`, { withCredentials: true })
-      .then((res) => {
-        setItems(res.data.data);
-      })
-      .catch((err) => {
-        if (err.response.status === 401) {
-          localStorage.setItem('isLogin', 'false');
-          navigate('/login');
-        }
-        else {
-        }
-      });
+    const fetchData = async () => {
+      await axios
+        .get(`${process.env.REACT_APP_API_URL}/lists`, { withCredentials: true })
+        .then((res) => {
+          setItems(res.data.data);
+        })
+        .catch((err) => {
+          if (err.response.status === 401) {
+            localStorage.setItem('isLogin', 'false');
+            navigate('/login');
+          }
+          else {
+          }
+        });
+    }
+    fetchData()
 
-    return () => {
-      setItems([]);
-    };
     // eslint-disable-next-line
   }, []);
 

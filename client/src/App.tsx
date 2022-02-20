@@ -1,4 +1,4 @@
-import { useState } from 'react';
+
 import { Routes, Route } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -18,17 +18,18 @@ const Container = styled.div`
 `;
 
 function App() {
-  const [isLogin, setIsLogin] = useState(!!localStorage.getItem("isLogin"));
+
+
   return (
     <Container>
       <Nav />
       <main>
         <Routes>
-          <Route path='/' element={<Home isLogin={isLogin} />} />
+          <Route path='/' element={<Home />} />
           <Route path='/login' element={<Login />} />
           <Route
             path='/callback'
-            element={<Callback isLogin={isLogin} setIsLogin={setIsLogin} />}
+            element={<Callback />}
           />
           <Route path='/lists' element={<Lists />} />
         </Routes>
