@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { listGetAll } from '../apis';
 import styled from 'styled-components';
 
 const Container = styled.div`
@@ -31,10 +31,9 @@ const Lists = () => {
       navigate('/login');
     }
     const fetchData = async () => {
-      await axios
-        .get(`${process.env.REACT_APP_API_URL}/lists`, { withCredentials: true })
+      await listGetAll()
         .then((res) => {
-          setItems(res.data.data);
+          setItems(res.data);
         })
         .catch((err) => {
           if (err.response.status === 401) {

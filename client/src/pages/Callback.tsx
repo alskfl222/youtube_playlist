@@ -13,12 +13,8 @@ const Callback = () => {
 
   useEffect(() => {
     if (!!localStorage.getItem('isLogin')) {
-      setTimeout(() => navigate('/lists'), 3000);
+      navigate('/lists')
     }
-  // eslint-disable-next-line
-  }, []);
-
-  useEffect(() => {
     axios
       .post(
         `${process.env.REACT_APP_API_URL}/users/login`,
@@ -27,6 +23,7 @@ const Callback = () => {
       )
       .then((result) => {
         localStorage.setItem('isLogin', 'true')
+        setTimeout(() => navigate('/lists'), 3000);
       });
   // eslint-disable-next-line
   }, []);
