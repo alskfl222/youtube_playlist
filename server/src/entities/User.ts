@@ -2,7 +2,7 @@ import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { UserList } from "./UserList";
 import { List } from "./List";
 
-@Entity("user", { schema: "test" })
+@Entity("user", { schema: "ypdb" })
 export class User {
   @PrimaryGeneratedColumn({ type: "int", name: "id" })
   id: number;

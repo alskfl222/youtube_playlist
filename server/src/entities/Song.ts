@@ -1,7 +1,7 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { SongList } from "./SongList";
 
-@Entity("song", { schema: "test" })
+@Entity("song", { schema: "ypdb" })
 export class Song {
   @PrimaryGeneratedColumn({ type: "int", name: "id" })
   id: number;

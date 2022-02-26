@@ -12,7 +12,7 @@ import { UserList } from "./UserList";
 import { User } from "./User";
 
 @Index("user_id", ["userId"], {})
-@Entity("list", { schema: "test" })
+@Entity("list", { schema: "ypdb" })
 export class List {
   @PrimaryGeneratedColumn({ type: "int", name: "id" })
   id: number;

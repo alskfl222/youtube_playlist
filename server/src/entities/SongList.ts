@@ -11,7 +11,7 @@ import { List } from "./List";
 
 @Index("list_id", ["listId"], {})
 @Index("song_id", ["songId"], {})
-@Entity("song_list", { schema: "test" })
+@Entity("song_list", { schema: "ypdb" })
 export class SongList {
   @PrimaryGeneratedColumn({ type: "int", name: "id" })
   id: number;

@@ -5,7 +5,9 @@ import { getConnection } from 'typeorm';
 
 import token from './token';
 
+import { User } from '../entities/User';
 import { List } from '../entities/List';
+import { UserList } from '../entities/UserList';
 
 import 'dotenv/config';
 
@@ -78,12 +80,60 @@ const listsController = {
       if (!tokenData) {
         return res.status(401).send('Not Authorized');
       }
-      const queryBuilder = await getConnection().createQueryBuilder(
-        List,
-        'list'
-      );
-      const listAll = await queryBuilder.getMany();
-      res.status(200).json({ data: listAll, message: 'OK' });
+      const { data } = tokenData;
+      const { email } = data;
+      const listAll = await getConnection()
+        .createQueryBuilder(User, 'user')
+        .innerJoinAndSelect('user.userLists', 'userLists')
+        .innerJoinAndSelect('userLists.list', 'list')
+        .where('user.email = :email', { email: email })
+        .getMany();
+      const resData = {
+          username: data.name,
+          list: listAll[0].userLists.map(x => x.list)
+        }
+      res.status(200).json({ data: resData, message: 'OK' });
+    } catch (err) {
+      res.status(500).send({
+        message: 'Internal server error',
+      });
+      next(err);
+    }
+  },
+  add: async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const tokenData = token.isAuthorized(req);
+      if (!tokenData) {
+        return res.status(401).send('Not Authorized');
+      }
+      const { id } = tokenData.data;
+      const { name, href } = req.body;
+      const insertList = await getConnection()
+        .createQueryBuilder()
+        .insert()
+        .into(List)
+        .values({
+          userId: id,
+          name,
+          href,
+        })
+        .execute();
+      const insertUserList = await getConnection()
+        .createQueryBuilder()
+        .insert()
+        .into(UserList)
+        .values({
+          userId: id,
+          listId: insertList.raw.insertId,
+        })
+        .execute();
+
+      res
+        .status(201)
+        .json({
+          data: { list: { ...insertList.generatedMaps[0], name, href } },
+          message: 'OK',
+        });
     } catch (err) {
       res.status(500).send({
         message: 'Internal server error',
