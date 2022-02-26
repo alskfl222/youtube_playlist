@@ -12,7 +12,7 @@ import 'dotenv/config';
 const oauth2Client = new google.auth.OAuth2(
   process.env.GOOGLE_CLIENT_ID,
   process.env.GOOGLE_CLIENT_SECRET,
-  `${process.env.CLIENT_DOMAIN}/callback`  // callback 주소
+  `${process.env.CLIENT_DOMAIN}:${process.env.CLIENT_PORT}/callback`  // callback 주소
 );
 
 const authURL = oauth2Client.generateAuthUrl({
@@ -61,14 +61,10 @@ const usersController = {
         id: -1,
         name: googleUserInfo.name,
         email: googleUserInfo.email,
-        // token: {
-        //   // youtube: {
-        //   //   access_token: token,
-        //   // }
-        //   youtube: {
-        //     access_token: tokens.access_token,
-        //     refresh_token: tokens.refresh_token || null,
-        //   },
+        youtube: {
+          access_token: tokens.access_token,
+          refresh_token: tokens.refresh_token || null,
+        },
         // },
       };
       if (!check) {
@@ -85,7 +81,7 @@ const usersController = {
       }
 
       const accessToken = token.generateAccessToken(tokenData);
-      // delete tokenData['token'];
+      delete tokenData['token'];
       token.sendAccessToken(res, tokenData, accessToken);
     } catch (err) {
       res.status(500).send({

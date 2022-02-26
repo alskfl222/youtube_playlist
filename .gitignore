@@ -9,3 +9,4 @@ yarn.lock
 *.fig:Zone.Identifier
 nohup.out
 gcp_key.json
+ormconfig.*
