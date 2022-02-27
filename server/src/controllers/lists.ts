@@ -1,23 +1,18 @@
 import { Request, Response, NextFunction } from 'express';
 import { getConnection } from 'typeorm';
 
-// import { google } from 'googleapis';
+import { google, youtube_v3 } from 'googleapis';
 
 import token from './token';
 
 import { User } from '../entities/User';
 import { List } from '../entities/List';
 import { UserList } from '../entities/UserList';
+import { Quota } from '../entities/Quota';
 
 import 'dotenv/config';
 
 // const SERVER_PORT = process.env.SERVER_PORT || 4000;
-
-// const oauth2Client = new google.auth.OAuth2(
-//   process.env.GOOGLE_CLIENT_ID,
-//   process.env.GOOGLE_CLIENT_SECRET,
-//   `${process.env.SERVER_DOMAIN}:${SERVER_PORT}/users/login/callback`
-// );
 
 // const listsController = {
 // getAll: async (req: Request, res: Response, next: NextFunction) => {
@@ -89,10 +84,77 @@ const listsController = {
         .where('user.email = :email', { email: email })
         .getMany();
       const resData = {
-          username: data.name,
-          list: listAll[0].userLists.map(x => x.list)
-        }
+        username: data.name,
+        list: listAll[0].userLists.map((x) => x.list),
+      };
       res.status(200).json({ data: resData, message: 'OK' });
+    } catch (err) {
+      res.status(500).send({
+        message: 'Internal server error',
+      });
+      next(err);
+    }
+  },
+
+  search: async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const tokenData = token.isAuthorized(req);
+      if (!tokenData) {
+        return res.status(401).send('Not Authorized');
+      }
+      const today = new Date();
+      today.setHours(today.getHours() - 9);
+      const TODAY = new Date(
+        today.getFullYear(),
+        today.getMonth(),
+        today.getDate()
+      );
+
+      const quota = await getConnection().createQueryBuilder(Quota, 'quota');
+      const checkQuota = await quota
+        .where('quota.date_utc = :date', { date: TODAY })
+        .getOne();
+        
+      console.log(checkQuota)
+
+      if (!checkQuota) {
+        await getConnection()
+          .createQueryBuilder()
+          .insert()
+          .into(Quota)
+          .values({
+            dateUtc: TODAY,
+            quota: 0,
+          })
+          .execute();
+      }
+
+      const q = req.query.q as string;
+      const youtube = google.youtube({
+        version: 'v3',
+        auth: `${process.env.GOOGLE_API_KEY}`,
+      });
+      const result = await youtube.search.list({
+        part: ['snippet'],
+        type: ['playlist'],
+        q,
+        maxResults: 20,
+      });
+      console.log("RESPONSE")
+      await getConnection()
+        .createQueryBuilder()
+        .update(Quota)
+        .set({
+          quota: () => 'quota + 1',
+        })
+        .where('date_utc = :date', { date: TODAY })
+        .execute();
+
+      res.status(201).json({
+        quota: checkQuota.quota + 1,
+        data: result.data.items.map(el => el.snippet),
+        message: 'OK',
+      });
     } catch (err) {
       res.status(500).send({
         message: 'Internal server error',
@@ -128,12 +190,10 @@ const listsController = {
         })
         .execute();
 
-      res
-        .status(201)
-        .json({
-          data: { list: { ...insertList.generatedMaps[0], name, href } },
-          message: 'OK',
-        });
+      res.status(201).json({
+        data: { list: { ...insertList.generatedMaps[0], name, href } },
+        message: 'OK',
+      });
     } catch (err) {
       res.status(500).send({
         message: 'Internal server error',

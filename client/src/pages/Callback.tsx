@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import axios from 'axios';
+
+import { Login } from '../apis';
 import QueryString from 'qs';
 // import styled from 'styled-components';
 
@@ -15,12 +16,7 @@ const Callback = () => {
     if (!!localStorage.getItem('isLogin')) {
       navigate('/lists')
     }
-    axios
-      .post(
-        `${process.env.REACT_APP_API_URL}/users/login`,
-        { code },
-        { withCredentials: true }
-      )
+  Login(code as string)
       .then((result) => {
         localStorage.setItem('isLogin', 'true')
         setTimeout(() => navigate('/lists'), 3000);

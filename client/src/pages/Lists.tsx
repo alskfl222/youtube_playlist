@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { listGetAll } from '../apis';
+import ControlList from '../components/ControlList';
+import SearchList from '../components/SearchList';
 import styled from 'styled-components';
 
 const Container = styled.div`
@@ -9,59 +10,59 @@ const Container = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: .5rem;
+  gap: 0.5rem;
+`;
+const Tab = styled.div`
+  width: 100%;
+  height: 60px;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  gap: 1rem;
+`;
+const TabTitle = styled.button`
+  width: 30%;
+  min-width: 160px;
+  font-size: 2rem;
+  font-weight: 700;
+  text-align: center;
+  border: none;
+  cursor: pointer;
 `;
 
-const ItemContainer = styled.div`
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-`;
+
 
 const Lists = () => {
-  const [items, setItems] = useState<any[]>([]);
+
+  const [view, setView] = useState<number>(0);
   const navigate = useNavigate();
 
-  const makeFullHref = (href: string) => {
-    return `https://www.youtube.com/playlist?list=${href}`;
+  const tabTitles = ['검색', '목록'];
+
+  const handleView = (value: number) => {
+    setView(value);
   };
 
   useEffect(() => {
     if (!localStorage.getItem('isLogin')) {
       navigate('/login');
     }
-    const fetchData = async () => {
-      await listGetAll()
-        .then((res) => {
-          setItems(res.data);
-        })
-        .catch((err) => {
-          if (err.response.status === 401) {
-            localStorage.setItem('isLogin', 'false');
-            navigate('/login');
-          }
-          else {
-          }
-        });
-    }
-    fetchData()
-
     // eslint-disable-next-line
   }, []);
 
+  const tabContents = [
+    <SearchList />,
+    <ControlList />,
+  ];
+
   return (
     <Container>
-      {items
-        .slice()
-        .reverse()
-        .map((item) => {
-          return (
-            <ItemContainer key={item.id}>
-              <div>{item.name}</div>
-              <a href={makeFullHref(item.href)}>YOUTUBE LINK</a>
-            </ItemContainer>
-          );
-        })}
+      <Tab>
+        {tabTitles.map((tab, idx) => (
+          <TabTitle onClick={() => handleView(idx)}>{tab}</TabTitle>
+        ))}
+      </Tab>
+      {tabContents[view]}
     </Container>
   );
 };
