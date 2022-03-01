@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 const Container = styled.div`
@@ -50,6 +50,14 @@ const SearchList = () => {
   const handleQuery = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value);
   };
+
+  const checkQuota = () => {
+    
+  }
+
+  useEffect(() => {
+
+  }, [])
 
   return (
     <Container>
