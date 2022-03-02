@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { getConnection } from 'typeorm';
 
-import { google, youtube_v3 } from 'googleapis';
+import { google } from 'googleapis';
 
 import token from './token';
 
@@ -10,6 +10,7 @@ import { List } from '../entities/List';
 import { UserList } from '../entities/UserList';
 import { Quota } from '../entities/Quota';
 
+import { TODAY } from '../util';
 import 'dotenv/config';
 
 // const SERVER_PORT = process.env.SERVER_PORT || 4000;
@@ -102,13 +103,6 @@ const listsController = {
       if (!tokenData) {
         return res.status(401).send('Not Authorized');
       }
-      const today = new Date();
-      today.setHours(today.getHours() - 9);
-      const TODAY = new Date(
-        today.getFullYear(),
-        today.getMonth(),
-        today.getDate()
-      );
 
       const quota = await getConnection().createQueryBuilder(Quota, 'quota');
       const checkQuota = await quota
@@ -145,17 +139,41 @@ const listsController = {
         .createQueryBuilder()
         .update(Quota)
         .set({
-          quota: () => 'quota + 1',
+          quota: () => 'quota + 100',
         })
         .where('date_utc = :date', { date: TODAY })
         .execute();
 
       res.status(201).json({
-        quota: checkQuota.quota + 1,
+        quota: checkQuota.quota + 100,
         data: result.data.items.map(el => el.snippet),
         message: 'OK',
       });
     } catch (err) {
+      res.status(500).send({
+        message: 'Internal server error',
+      });
+      next(err);
+    }
+  },
+  quota: async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const tokenData = token.isAuthorized(req);
+      if (!tokenData) {
+        return res.status(401).send('Not Authorized');
+      }
+
+      const quota = await getConnection().createQueryBuilder(Quota, 'quota');
+      const checkQuota = await quota
+        .where('quota.date_utc = :date', { date: TODAY })
+        .getOne();
+      res.status(200).json({
+        quota: checkQuota.quota,
+        message: 'OK',
+      });
+    }
+    
+    catch (err) {
       res.status(500).send({
         message: 'Internal server error',
       });
