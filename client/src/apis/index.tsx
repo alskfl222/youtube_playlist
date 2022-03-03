@@ -24,3 +24,9 @@ export const checkQuota = () => {
     .get(`${process.env.REACT_APP_API_URL}/lists/quota`)
     .then((result) => result.data);
 };
+
+export const addList = (listData: {name: string, href: string}) => {
+  return axios
+    .post(`${process.env.REACT_APP_API_URL}/lists`, listData)
+    .then((result) => result.data);
+};
