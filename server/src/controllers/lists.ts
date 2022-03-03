@@ -108,8 +108,6 @@ const listsController = {
       const checkQuota = await quota
         .where('quota.date_utc = :date', { date: TODAY })
         .getOne();
-        
-      console.log(checkQuota)
 
       if (!checkQuota) {
         await getConnection()
@@ -135,6 +133,7 @@ const listsController = {
         maxResults: 20,
       });
       console.log("RESPONSE")
+      console.log(result.data.items)
       await getConnection()
         .createQueryBuilder()
         .update(Quota)
@@ -144,9 +143,20 @@ const listsController = {
         .where('date_utc = :date', { date: TODAY })
         .execute();
 
+      const resultData = result.data.items.map(el => {
+        return {
+          title: el.snippet.title,
+          href: el.id.playlistId,
+          thumbnail: el.snippet.thumbnails.high,
+          channelTitle: el.snippet.channelTitle,
+          channelHref: el.snippet.channelId,
+          channelDesc: el.snippet.description,
+        }
+      })
+
       res.status(201).json({
-        quota: checkQuota.quota + 100,
-        data: result.data.items.map(el => el.snippet),
+        quota: checkQuota ? checkQuota.quota + 100 : 100,
+        data: resultData,
         message: 'OK',
       });
     } catch (err) {
@@ -194,6 +204,7 @@ const listsController = {
       next(err);
     }
   },
+
   add: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const tokenData = token.isAuthorized(req);

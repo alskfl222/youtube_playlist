@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { checkQuota } from '../apis';
+import { checkQuota, searchList } from '../apis';
 import styled from 'styled-components';
 
 const Container = styled.div`
@@ -51,21 +51,25 @@ const Item = styled.div`
 const SearchList = () => {
   const [query, setQuery] = useState<string>('');
   const [results, setResults] = useState<any[]>([]);
-  const [quota, setQuota] = useState<number>(0)
+  const [quota, setQuota] = useState<number>(0);
 
   const handleQuery = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value);
   };
+  const handleSearchBtn = async () => {
+    const response = await searchList(query);
+    console.log(response);
+  };
 
   const checkOnMount = async () => {
-    const check = await checkQuota()
-    console.log(check)
-    setQuota(check.quota)
-  }
+    const check = await checkQuota();
+    console.log(check);
+    setQuota(check.quota);
+  };
 
   useEffect(() => {
-    checkOnMount()
-  }, [])
+    checkOnMount();
+  }, []);
 
   return (
     <Container>
@@ -73,7 +77,10 @@ const SearchList = () => {
         <SearchBar
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleQuery(e)}
         />
-        <SearchBtn disabled={quota < 10000 ? false : true}/>
+        <SearchBtn
+          disabled={quota < 10000 ? false : true}
+          onClick={handleSearchBtn}
+        />
       </SearchBarContainer>
       <ResultsContainer>
         {results.length !== 0
