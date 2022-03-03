@@ -133,7 +133,7 @@ const listsController = {
         maxResults: 20,
       });
       console.log("RESPONSE")
-      console.log(result.data.items)
+      console.log(result.data.items[0])
       await getConnection()
         .createQueryBuilder()
         .update(Quota)
@@ -234,7 +234,7 @@ const listsController = {
         .execute();
 
       res.status(201).json({
-        data: { list: { ...insertList.generatedMaps[0], name, href } },
+        data: { ...insertList.generatedMaps[0], name, href },
         message: 'OK',
       });
     } catch (err) {

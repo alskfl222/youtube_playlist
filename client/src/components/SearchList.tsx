@@ -115,12 +115,12 @@ const SearchList = () => {
   const handlePlaylistAddBtn = async (idx: number) => {
     setIsLoading(true)
     console.log("CLICKED BUTTON")
-    console.log(results[idx])
     const listData = {
       name: results[idx].title,
       href: results[idx].href,
     }
     const response = await addList(listData)
+    console.log(response)
     setIsLoading(false)
   }
 
