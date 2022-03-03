@@ -156,6 +156,7 @@ const listsController = {
       next(err);
     }
   },
+
   quota: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const tokenData = token.isAuthorized(req);
@@ -167,8 +168,21 @@ const listsController = {
       const checkQuota = await quota
         .where('quota.date_utc = :date', { date: TODAY })
         .getOne();
+        
+      if (!checkQuota) {
+        await getConnection()
+        .createQueryBuilder()
+        .insert()
+        .into(Quota)
+        .values({
+          dateUtc: TODAY,
+          quota: 0,
+        })
+        .execute();
+      }
+
       res.status(200).json({
-        quota: checkQuota.quota,
+        quota: checkQuota ? checkQuota.quota : 0,
         message: 'OK',
       });
     }

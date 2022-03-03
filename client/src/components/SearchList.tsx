@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { checkQuota } from '../apis';
 import styled from 'styled-components';
 
 const Container = styled.div`
@@ -31,6 +32,10 @@ const SearchBtn = styled.button`
   background-color: coral;
   border: none;
   border-radius: 24px;
+
+  &:disabled {
+    background-color: #666;
+  }
 `;
 
 const ResultsContainer = styled.div`
@@ -46,17 +51,20 @@ const Item = styled.div`
 const SearchList = () => {
   const [query, setQuery] = useState<string>('');
   const [results, setResults] = useState<any[]>([]);
+  const [quota, setQuota] = useState<number>(0)
 
   const handleQuery = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value);
   };
 
-  const checkQuota = () => {
-    
+  const checkOnMount = async () => {
+    const check = await checkQuota()
+    console.log(check)
+    setQuota(check.quota)
   }
 
   useEffect(() => {
-
+    checkOnMount()
   }, [])
 
   return (
@@ -65,7 +73,7 @@ const SearchList = () => {
         <SearchBar
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleQuery(e)}
         />
-        <SearchBtn />
+        <SearchBtn disabled={quota < 10000 ? false : true}/>
       </SearchBarContainer>
       <ResultsContainer>
         {results.length !== 0

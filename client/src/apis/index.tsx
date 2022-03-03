@@ -21,6 +21,6 @@ export const searchList = (q: string) => {
 
 export const checkQuota = () => {
   return axios
-    .get(`${process.env.REACT_APP_API_URL}/quota`)
+    .get(`${process.env.REACT_APP_API_URL}/lists/quota`)
     .then((result) => result.data);
 };
