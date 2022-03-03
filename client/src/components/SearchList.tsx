@@ -39,14 +39,59 @@ const SearchBtn = styled.button`
 `;
 
 const ResultsContainer = styled.div`
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
   border: 1px solid black;
 `;
 
-const Item = styled.div`
-  width: 100%;
-  height: 200px;
-  border: 1px dashed blue;
+const ResultsMsg = styled.div`
+  font-size: 2rem;
+  font-weight: 700;
 `;
+
+const PlaylistContainer = styled.div`
+  width: 100%;
+  height: 240px;
+  display: flex;
+  align-items: center;
+  border-radius: 12px;
+  box-shadow: 1px 1px 1px 1px black;
+
+  img {
+    height: 200px;
+    padding: 0 1rem;
+  }
+  a {
+    text-decoration: none;
+    color: black;
+  }
+  h4, h5 { 
+    margin: 0;
+  }
+  p {
+    word-break: keep-all;
+  }
+  button {
+    border: none;
+  }
+`;
+
+const PlaylistDescContainer = styled.div`
+  width: 100%;
+  padding: 0 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+`
+
+const PlaylistAddBtn = styled.button`
+  width: 6rem;
+  margin: 0 1rem;
+  padding: 1rem;
+`
 
 const SearchList = () => {
   const [query, setQuery] = useState<string>('');
@@ -59,6 +104,8 @@ const SearchList = () => {
   const handleSearchBtn = async () => {
     const response = await searchList(query);
     console.log(response);
+    setQuota(response.quota);
+    setResults(response.data);
   };
 
   const checkOnMount = async () => {
@@ -83,11 +130,23 @@ const SearchList = () => {
         />
       </SearchBarContainer>
       <ResultsContainer>
-        {results.length !== 0
-          ? results.map((item) => {
-              return <Item>{item}</Item>;
-            })
-          : '검색 결과가 없습니다'}
+        {results && results.length !== 0 ? (
+          results.map((item) => {
+            return (
+              <PlaylistContainer>
+                <img src={item.thumbnail.url} />
+                <PlaylistDescContainer>
+                  <h4><a href={`https://www.youtube.com/playlist?list=${item.href}`}>{item.title}</a></h4>
+                  <h5><a href={`https://www.youtube.com/channel/${item.channelHref}`}>{item.channelTitle}</a></h5>
+                  <p>{item.channelDesc}</p>
+                </PlaylistDescContainer>
+                <PlaylistAddBtn>목록<br />추가</PlaylistAddBtn>
+              </PlaylistContainer>
+            );
+          })
+        ) : (
+          <ResultsMsg>검색 결과가 없습니다</ResultsMsg>
+        )}
       </ResultsContainer>
     </Container>
   );
