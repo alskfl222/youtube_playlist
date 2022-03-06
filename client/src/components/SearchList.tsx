@@ -134,6 +134,12 @@ const SearchList = () => {
 
   useEffect(() => {
     checkOnMount();
+    if (localStorage.getItem('beforeSearch')) {
+      setResults(JSON.parse(localStorage.getItem('beforeSearch') as string))
+    }
+    return () => {
+      localStorage.setItem('beforeSearch', JSON.stringify(results))
+    }
   }, []);
 
   return (
