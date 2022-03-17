@@ -20,14 +20,24 @@ const ItemContainer = styled.div`
 
 const ControlList = () => {
   const [listItems, setListItems] = useState<any[]>([]);
+  const [check, setCheck] = useState<any[]>([]);
   const navigate = useNavigate();
 
   const makeFullHref = (href: string) => {
     return `https://www.youtube.com/playlist?list=${href}`;
   };
   const handlePlayerBtn = () => {
-    navigate('/player')
+    navigate('/player', { state: check })
   }
+  const handleCheckbox = (item: any) => {
+    const hrefs = check.map(el => el.href)
+    if (hrefs.includes(item.href)) {
+      setCheck(check.filter(el => el.href !== item.href))
+    } else {
+      setCheck([...check, item])
+    }
+  }
+  console.log(check)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -61,6 +71,7 @@ const ControlList = () => {
           .map((list) => {
             return (
               <ItemContainer key={list.id}>
+                <input type='checkbox' onChange={() => handleCheckbox(list)}></input>
                 <div>{list.name}</div>
                 <a href={makeFullHref(list.href)}>YOUTUBE LINK</a>
               </ItemContainer>

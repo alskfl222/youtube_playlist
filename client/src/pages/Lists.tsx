@@ -36,8 +36,9 @@ const PlayerBtn = styled.button`
 
 
 const Lists = () => {
-
   const [view, setView] = useState<number>(1);
+
+
   const navigate = useNavigate();
 
   const tabTitles = ['검색', '목록'];

@@ -7,6 +7,7 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import Callback from './pages/Callback';
 import Lists from './pages/Lists';
+import Player from './pages/Player';
 
 const Container = styled.div`
   width: 100vw;
@@ -32,6 +33,7 @@ function App() {
             element={<Callback />}
           />
           <Route path='/lists' element={<Lists />} />
+          <Route path='/player' element={<Player />} />
         </Routes>
       </main>
     </Container>
