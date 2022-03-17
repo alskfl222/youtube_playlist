@@ -29,12 +29,15 @@ const TabTitle = styled.button`
   border: none;
   cursor: pointer;
 `;
+const PlayerBtn = styled.button`
+
+`
 
 
 
 const Lists = () => {
 
-  const [view, setView] = useState<number>(0);
+  const [view, setView] = useState<number>(1);
   const navigate = useNavigate();
 
   const tabTitles = ['검색', '목록'];
@@ -59,9 +62,10 @@ const Lists = () => {
     <Container>
       <Tab>
         {tabTitles.map((tab, idx) => (
-          <TabTitle onClick={() => handleView(idx)}>{tab}</TabTitle>
+          <TabTitle key={idx} onClick={() => handleView(idx)}>{tab}</TabTitle>
         ))}
       </Tab>
+
       {tabContents[view]}
     </Container>
   );

@@ -9,6 +9,9 @@ const Container = styled.div`
   flex-direction: column;
 `;
 
+const PlayerBtn = styled.button`
+
+`
 const ItemContainer = styled.div`
   width: 100%;
   display: flex;
@@ -22,6 +25,9 @@ const ControlList = () => {
   const makeFullHref = (href: string) => {
     return `https://www.youtube.com/playlist?list=${href}`;
   };
+  const handlePlayerBtn = () => {
+    navigate('/player')
+  }
 
   useEffect(() => {
     const fetchData = async () => {
@@ -47,6 +53,7 @@ const ControlList = () => {
 
   return (
     <Container>
+      <PlayerBtn onClick={handlePlayerBtn}>PLAYER</PlayerBtn>
       {listItems &&
         listItems
           .slice()
