@@ -2,4 +2,8 @@
 
 ## To manage BGM playlist in youtube 
 
-- test : jupyter notebook
+docker-compose
+
+client: create-react-app typescript
+server: express typescript
+reverse-proxy: nginx
