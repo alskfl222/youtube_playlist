@@ -6,7 +6,9 @@ const Player = () => {
   console.log(state)
 
   return (
-    <>PLAYER</>
+    <>
+    {typeof state}
+    </>
   )
 }
 

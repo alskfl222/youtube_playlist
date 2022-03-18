@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ControlList from '../components/ControlList';
 import SearchList from '../components/SearchList';
@@ -38,21 +38,11 @@ const PlayerBtn = styled.button`
 const Lists = () => {
   const [view, setView] = useState<number>(1);
 
-
-  const navigate = useNavigate();
-
   const tabTitles = ['검색', '목록'];
 
   const handleView = (value: number) => {
     setView(value);
   };
-
-  useEffect(() => {
-    if (!localStorage.getItem('isLogin')) {
-      navigate('/login');
-    }
-    // eslint-disable-next-line
-  }, []);
 
   const tabContents = [
     <SearchList />,
