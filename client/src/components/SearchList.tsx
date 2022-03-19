@@ -103,6 +103,7 @@ const SearchList = () => {
   const handleQuery = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value);
   };
+
   const handleSearchBtn = async () => {
     setIsLoading(true)
     const response = await searchList(query);
@@ -149,7 +150,7 @@ const SearchList = () => {
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleQuery(e)}
         />
         <SearchBtn
-          disabled={quota < 10000 ? false : true}
+          disabled={quota < 10000 - 100 ? false : true}
           onClick={handleSearchBtn}
         />
       </SearchBarContainer>

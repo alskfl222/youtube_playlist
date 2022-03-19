@@ -20,7 +20,7 @@ const authURL = oauth2Client.generateAuthUrl({
   scope: [
     'https://www.googleapis.com/auth/userinfo.profile',
     'https://www.googleapis.com/auth/userinfo.email',
-    'https://www.googleapis.com/auth/youtube.readonly',
+    // 'https://www.googleapis.com/auth/youtube.readonly',
   ],
 });
 
@@ -61,10 +61,10 @@ const usersController = {
         id: -1,
         name: googleUserInfo.name,
         email: googleUserInfo.email,
-        youtube: {
-          access_token: tokens.access_token,
-          refresh_token: tokens.refresh_token || null,
-        },
+        // youtube: {
+        //   access_token: tokens.access_token,
+        //   refresh_token: tokens.refresh_token || null,
+        // },
         // },
       };
       if (!check) {

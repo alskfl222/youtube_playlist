@@ -25,8 +25,14 @@ export const checkQuota = () => {
     .then((result) => result.data);
 };
 
-export const addList = (listData: {name: string, href: string}) => {
+export const addList = (listData: { name: string; href: string }) => {
   return axios
     .post(`${process.env.REACT_APP_API_URL}/lists`, listData)
+    .then((result) => result.data);
+};
+
+export const getPlayerItems = (hrefs: string[]) => {
+  return axios
+    .post(`${process.env.REACT_APP_API_URL}/player`, { hrefs })
     .then((result) => result.data);
 };
