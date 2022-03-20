@@ -86,7 +86,7 @@ const listsController = {
         .getMany();
       const resData = {
         username: data.name,
-        list: listAll[0].userLists.map((x) => x.list),
+        list: listAll.length > 0 ? listAll[0].userLists.map((x) => x.list) : [],
       };
       res.status(200).json({ data: resData, message: 'OK' });
     } catch (err) {
