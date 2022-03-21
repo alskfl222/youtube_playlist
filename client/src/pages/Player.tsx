@@ -2,60 +2,53 @@ import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { getPlayerItems } from '../apis';
 import styled from 'styled-components';
+import YouTubePlayer from 'youtube-player';
 
 const Player = () => {
   const { state } = useLocation();
   const [items, setItems] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [player, setPlayer] = useState<any>(null);
+  const [status, setStatus] = useState<object>({});
   const [queue, setQueue] = useState<number>(0);
   const hrefs = Array.isArray(state) ? state.map((el: any) => el.href) : [];
-  const player =
-    document.getElementsByTagName('iframe').length > 0
-      ? document.getElementsByTagName('iframe')[0].contentWindow
-      : null;
 
-  const makePlayer = (songHref: string) => {
-    return (
-      <iframe
-        width='480'
-        height='320'
-        src={`https://www.youtube.com/embed/${songHref}?autoplay=1&mute=0&enablejsapi=1&version=3&playerapiid=ytplayer`}
-        title='YouTube video player'
-        frameBorder='0'
-        allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
-        allowFullScreen
-      ></iframe>
-    );
-  };
-  const startPlayer = (player: HTMLIFrameElement['contentWindow']) => {
-    player?.postMessage(
-      '{ "event" : "command", "func" : "' + 'playVideo' + '" , "args" : "" }',
-      '*'
-    );
+  const startPlayer = () => {
+    player?.playVideo();
   };
 
-  const stopPlayer = (player: HTMLIFrameElement['contentWindow']) => {
-    player?.postMessage(
-      '{ "event" : "command", "func" : "' + 'stopVideo' + '" , "args" : "" }',
-      '*'
-    );
+  const stopPlayer = () => {
+    player?.stopVideo();
   };
 
   useEffect(() => {
     const initPlayer = async () => {
       const res = await getPlayerItems(hrefs);
       await setItems(res.data);
+      await setPlayer(YouTubePlayer('youtube-player'));
+      await setIsLoading(false);
     };
     initPlayer();
     // eslint-disable-next-line
   }, []);
 
-  console.log(items);
+  useEffect(() => {
+    if (!isLoading) {
+      player?.loadVideoById(items[queue].songHref);
+      player?.on('stateChange', async (event: any) => {
+        if (event.data === 0) {
+          setQueue(queue + 1);
+        }
+      });
+    }
+    // eslint-disable-next-line
+  }, [queue, isLoading]);
 
   return (
     <>
-      {items.length > 0 && makePlayer(items[queue].songHref)}
-      <button onClick={() => startPlayer(player)}>start</button>
-      <button onClick={() => stopPlayer(player)}>stop</button>
+      <div id='youtube-player'></div>
+      <button onClick={startPlayer}>start</button>
+      <button onClick={stopPlayer}>stop</button>
       {items.map((item) => {
         return <div key={item.songHref}>{item.title}</div>;
       })}
