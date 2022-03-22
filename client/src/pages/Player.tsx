@@ -4,6 +4,7 @@ import { getPlayerItems } from '../apis';
 import styled from 'styled-components';
 import YouTubePlayer from 'youtube-player';
 import PlayerList from '../components/PlayerList';
+import PlayerChat from '../components/PlayerChat';
 
 const Player = () => {
   const { state } = useLocation();
@@ -121,6 +122,7 @@ const Player = () => {
       <div>
         <button onClick={handleListsViewerBtn}>open</button>
       </div>
+      <PlayerChat />
     </>
   );
 };

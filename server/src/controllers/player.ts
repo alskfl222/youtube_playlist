@@ -15,12 +15,8 @@ const playerController = {
         return res.status(401).send('Not Authorized');
       }
       console.log(req.body);
-      const check = await getConnection()
-        .createQueryBuilder(List, 'list')
-        .where('list.href = :href', { href: req.body.href })
-        .getMany();
-      console.log(check);
 
+      const resData = [];
       const quota = await getConnection().createQueryBuilder(Quota, 'quota');
       const checkQuota = await quota
         .where('quota.date_utc = :date', { date: TODAY })
@@ -37,13 +33,18 @@ const playerController = {
           .execute();
       }
       let countQuota = checkQuota ? checkQuota.quota : 0;
-      const youtube = google.youtube({
-        version: 'v3',
-        auth: `${process.env.GOOGLE_API_KEY}`,
-      });
-      const resData = [];
       let nextPage: string;
       for (let href of req.body.hrefs) {
+        const check = await getConnection()
+          .createQueryBuilder(List, 'list')
+          .where('list.href = :href', { href: req.body.href })
+          .getMany();
+        console.log(check);
+
+        const youtube = google.youtube({
+          version: 'v3',
+          auth: `${process.env.GOOGLE_API_KEY}`,
+        });
         while (true) {
           const result = await youtube.playlistItems.list({
             playlistId: href,
