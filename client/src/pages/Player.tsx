@@ -3,16 +3,18 @@ import { useLocation } from 'react-router-dom';
 import { getPlayerItems } from '../apis';
 import styled from 'styled-components';
 import YouTubePlayer from 'youtube-player';
+import PlayerList from '../components/PlayerList';
 
 const Player = () => {
   const { state } = useLocation();
   const [items, setItems] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isOpenedList, setIsOpenedList] = useState<boolean>(false);
   const [player, setPlayer] = useState<any>(null);
   const [currentTime, setCurrentTime] = useState<number>(0);
   const [duration, setDuration] = useState<number>(0);
   const [queue, setQueue] = useState<number>(0);
-  const timer = useRef<any>(null)
+  const timer = useRef<any>(null);
   const hrefs = Array.isArray(state) ? state.map((el: any) => el.href) : [];
 
   const startPlayer = () => {
@@ -25,6 +27,44 @@ const Player = () => {
 
   const startTimer = () => {
     setCurrentTime((currentTime) => currentTime + 1);
+  };
+
+  player?.on('stateChange', async (event: any) => {
+    console.log(event.data)
+    if (event.data === 0) {
+      if (timer.current !== null) {
+        clearInterval(timer.current);
+        timer.current = null;
+      }
+      setCurrentTime((currentTime) => 0);
+      setDuration((duration) => 0);
+      setQueue((queue) => queue + 1);
+    }
+    if (event.data === 1) {
+      const newCurrentTime = (await player?.getCurrentTime()) as number;
+      setCurrentTime((currentTime) => newCurrentTime);
+      if (timer.current !== null) {
+        clearInterval(timer.current);
+        timer.current = null;
+      }
+      timer.current = setInterval(startTimer, 1000);
+      if (duration === 0) {
+        setTimeout(async () => {
+          const newDuration = await player?.getDuration();
+          setDuration((duration) => newDuration);
+        }, 2000);
+      }
+    }
+    if (event.data === 2 || event.data === 3 || event.data === 5) {
+      if (timer.current !== null) {
+        clearInterval(timer.current);
+        timer.current = null;
+      }
+    }
+  });
+
+  const handleListsViewerBtn = () => {
+    setIsOpenedList((value) => !value);
   };
 
   useEffect(() => {
@@ -41,38 +81,7 @@ const Player = () => {
   useEffect(() => {
     if (!isLoading) {
       player?.loadVideoById(items[queue].songHref);
-      player?.on('stateChange', async (event: any) => {
-        if (event.data === 0) {
-          if (timer.current !== null) {
-            clearInterval(timer.current);
-            timer.current = null
-          }
-          setCurrentTime(currentTime => 0)
-          setDuration(duration => 0);
-          setQueue(queue => queue + 1);
-        }
-        if (event.data === 1) {
-          const newCurrentTime = (await player?.getCurrentTime()) as number;
-          setCurrentTime(currentTime => newCurrentTime)
-          if (timer.current !== null) {
-            clearInterval(timer.current);
-            timer.current = null
-          }
-          timer.current = setInterval(startTimer, 1000);
-          if (duration === 0) {
-            setTimeout(async () => {
-              const newDuration = await player?.getDuration();
-              setDuration(duration => newDuration);
-            }, 2000);
-          }
-        }
-        if (event.data === 2 || event.data === 3) {
-          if (timer.current !== null) {
-            clearInterval(timer.current);
-            timer.current = null
-          }
-        }
-      });
+      console.log(items[queue]);
     }
     // eslint-disable-next-line
   }, [queue, isLoading]);
@@ -80,14 +89,30 @@ const Player = () => {
   return (
     <>
       <div id='youtube-player'></div>
-      <button onClick={startPlayer}>start</button>
-      <button onClick={stopPlayer}>stop</button>
+      {isOpenedList && <PlayerList items={items} close={handleListsViewerBtn}/>}
+      <div>
+        {items.length > 0 && (
+          <div>
+            <p>{items[queue].title}</p>
+            <p>
+              <a
+                href={`https://www.youtube.com/channel/${items[queue].videoOwnerChannelId}`}
+              >
+                {items[queue].videoOwnerChannelTitle}
+              </a>
+            </p>
+          </div>
+        )}
+      </div>
       <div>
         {currentTime.toFixed()} / {duration.toFixed()}
+        <button onClick={startPlayer}>start</button>
+        <button onClick={stopPlayer}>stop</button>
       </div>
-      {items.map((item) => {
-        return <div key={item.songHref}>{item.title}</div>;
-      })}
+      <div>
+        <button onClick={handleListsViewerBtn}>open</button>
+      </div>
+
     </>
   );
 };
