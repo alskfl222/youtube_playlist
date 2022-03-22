@@ -30,7 +30,6 @@ const Player = () => {
   };
 
   player?.on('stateChange', async (event: any) => {
-    console.log(event.data)
     if (event.data === 0) {
       if (timer.current !== null) {
         clearInterval(timer.current);
@@ -66,6 +65,9 @@ const Player = () => {
   const handleListsViewerBtn = () => {
     setIsOpenedList((value) => !value);
   };
+  const handleQueue = (index: number) => {
+    setQueue((queue) => index);
+  };
 
   useEffect(() => {
     const initPlayer = async () => {
@@ -89,7 +91,14 @@ const Player = () => {
   return (
     <>
       <div id='youtube-player'></div>
-      {isOpenedList && <PlayerList items={items} close={handleListsViewerBtn}/>}
+      {isOpenedList && (
+        <PlayerList
+          items={items}
+          queue={queue}
+          choice={handleQueue}
+          close={handleListsViewerBtn}
+        />
+      )}
       <div>
         {items.length > 0 && (
           <div>
@@ -112,7 +121,6 @@ const Player = () => {
       <div>
         <button onClick={handleListsViewerBtn}>open</button>
       </div>
-
     </>
   );
 };
