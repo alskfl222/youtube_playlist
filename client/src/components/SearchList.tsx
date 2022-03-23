@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { checkQuota, searchList, addList } from '../apis';
 import styled from 'styled-components';
 
@@ -99,6 +100,7 @@ const SearchList = () => {
   const [results, setResults] = useState<any[]>([]);
   const [quota, setQuota] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const navigate = useNavigate()
 
   const handleQuery = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value);
@@ -110,6 +112,7 @@ const SearchList = () => {
     console.log(response);
     setQuota(response.quota);
     setResults(response.data);
+    localStorage.setItem('beforeSearch', JSON.stringify(results))
     setIsLoading(false)
   };
 
@@ -120,9 +123,7 @@ const SearchList = () => {
       name: results[idx].title,
       href: results[idx].href,
     }
-    const response = await addList(listData)
-    console.log(response)
-    setIsLoading(false)
+    await addList(listData).finally(() => setIsLoading(false))    
   }
 
   const checkOnMount = async () => {
@@ -134,12 +135,12 @@ const SearchList = () => {
   };
 
   useEffect(() => {
+    if (!localStorage.getItem("isLogin")) {
+      navigate('/login')
+    }
     checkOnMount();
     if (localStorage.getItem('beforeSearch')) {
       setResults(JSON.parse(localStorage.getItem('beforeSearch') as string))
-    }
-    return () => {
-      localStorage.setItem('beforeSearch', JSON.stringify(results))
     }
   }, []);
 

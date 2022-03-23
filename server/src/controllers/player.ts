@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { getConnection } from 'typeorm';
 import { google } from 'googleapis';
-import token from './token';
+import { Song } from '../entities/Song';
 import { List } from '../entities/List';
 import { Quota } from '../entities/Quota';
 import { TODAY } from '../util';
@@ -10,10 +10,6 @@ import 'dotenv/config';
 const playerController = {
   getPlayerItems: async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const tokenData = token.isAuthorized(req);
-      if (!tokenData) {
-        return res.status(401).send('Not Authorized');
-      }
       console.log(req.body);
 
       const resData = [];
@@ -34,10 +30,11 @@ const playerController = {
       }
       let countQuota = checkQuota ? checkQuota.quota : 0;
       let nextPage: string;
+
       for (let href of req.body.hrefs) {
         const check = await getConnection()
           .createQueryBuilder(List, 'list')
-          .where('list.href = :href', { href: req.body.href })
+          .where('list.href = :href', { href })
           .getMany();
         console.log(check);
 
@@ -54,13 +51,13 @@ const playerController = {
           });
           const items = result.data.items.map((el) => {
             return {
-              title: el.snippet.title,
-              thumbnails: el.snippet.thumbnails,
-              songHref: el.snippet.resourceId.videoId,
-              videoOwnerChannelTitle: el.snippet.videoOwnerChannelTitle,
-              videoOwnerChannelId: el.snippet.videoOwnerChannelId,
+              name: el.snippet.title,
+              href: el.snippet.resourceId.videoId,
+              uploader: el.snippet.videoOwnerChannelTitle,
+              uploader_href: el.snippet.videoOwnerChannelId,
             };
           });
+          // Song name, uploader, href
           resData.push(...items);
           await getConnection()
             .createQueryBuilder()
@@ -75,6 +72,7 @@ const playerController = {
           if (!nextPage) break;
         }
       }
+
 
       res.json({
         quota: countQuota,

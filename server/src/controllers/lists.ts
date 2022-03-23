@@ -8,66 +8,12 @@ import token from './token';
 import { User } from '../entities/User';
 import { List } from '../entities/List';
 import { UserList } from '../entities/UserList';
+import { Song } from '../entities/Song';
+import { SongList } from '../entities/SongList';
 import { Quota } from '../entities/Quota';
 
 import { TODAY } from '../util';
 import 'dotenv/config';
-
-// const SERVER_PORT = process.env.SERVER_PORT || 4000;
-
-// const listsController = {
-// getAll: async (req: Request, res: Response, next: NextFunction) => {
-//   try {
-//     const tokenData = token.isAuthorized(req);
-//     if (!tokenData) {
-//       return res.status(401).send('Not Authorized');
-//     }
-//     console.log(tokenData)
-//     oauth2Client.setCredentials(tokenData.data.token.youtube);
-//     const youtube = google.youtube({ auth: oauth2Client, version: 'v3' });
-//     const result = {};
-//     const listsData = [];
-//     console.log("GET LISTS")
-//     let lists = await youtube.playlists.list({
-//       part: ['snippet'],
-//       maxResults: 25,
-//       mine: true,
-//     });
-//     while (true) {
-//       listsData.push(...lists.data.items);
-//       let nextPageToken: string | undefined;
-//       nextPageToken = lists.data.nextPageToken;
-//       if (!nextPageToken) {
-//         result['channel'] = {
-//           id: lists.data.items[0].snippet.channelId,
-//           title: lists.data.items[0].snippet.channelTitle,
-//         };
-//         break;
-//       }
-//       lists = await youtube.playlists.list({
-//         part: ['snippet'],
-//         maxResults: 50,
-//         mine: true,
-//         pageToken: nextPageToken,
-//       });
-//     }
-//     console.log(listsData[0])
-//     result['data'] = listsData.map((el) => {
-//       return {
-//         id: el.id,
-//         title: el.snippet.title,
-//         description: el.snippet.description,
-//       };
-//     });
-//     res.json({ result, message: "OK" });
-//   } catch (err) {
-//     res.status(500).send({
-//       message: 'Internal server error',
-//     });
-//     next(err);
-//   }
-// },
-//}
 
 const listsController = {
   getAll: async (req: Request, res: Response, next: NextFunction) => {
@@ -132,8 +78,8 @@ const listsController = {
         q,
         maxResults: 20,
       });
-      console.log("RESPONSE")
-      console.log(result.data.items[0])
+      console.log('RESPONSE');
+      console.log(result.data.items[0]);
       await getConnection()
         .createQueryBuilder()
         .update(Quota)
@@ -143,7 +89,7 @@ const listsController = {
         .where('date_utc = :date', { date: TODAY })
         .execute();
 
-      const resultData = result.data.items.map(el => {
+      const resultData = result.data.items.map((el) => {
         return {
           title: el.snippet.title,
           href: el.id.playlistId,
@@ -151,8 +97,8 @@ const listsController = {
           channelTitle: el.snippet.channelTitle,
           channelHref: el.snippet.channelId,
           channelDesc: el.snippet.description,
-        }
-      })
+        };
+      });
 
       res.status(201).json({
         quota: checkQuota ? checkQuota.quota + 100 : 100,
@@ -178,26 +124,24 @@ const listsController = {
       const checkQuota = await quota
         .where('quota.date_utc = :date', { date: TODAY })
         .getOne();
-        
+
       if (!checkQuota) {
         await getConnection()
-        .createQueryBuilder()
-        .insert()
-        .into(Quota)
-        .values({
-          dateUtc: TODAY,
-          quota: 0,
-        })
-        .execute();
+          .createQueryBuilder()
+          .insert()
+          .into(Quota)
+          .values({
+            dateUtc: TODAY,
+            quota: 0,
+          })
+          .execute();
       }
 
       res.status(200).json({
         quota: checkQuota ? checkQuota.quota : 0,
         message: 'OK',
       });
-    }
-    
-    catch (err) {
+    } catch (err) {
       res.status(500).send({
         message: 'Internal server error',
       });
@@ -211,30 +155,131 @@ const listsController = {
       if (!tokenData) {
         return res.status(401).send('Not Authorized');
       }
+      const quota = await getConnection().createQueryBuilder(Quota, 'quota');
+      const checkQuota = await quota
+        .where('quota.date_utc = :date', { date: TODAY })
+        .getOne();
+      if (!checkQuota) {
+        await getConnection()
+          .createQueryBuilder()
+          .insert()
+          .into(Quota)
+          .values({
+            dateUtc: TODAY,
+            quota: 0,
+          })
+          .execute();
+      }
+      let countQuota = checkQuota ? checkQuota.quota : 0;
       const { id } = tokenData.data;
       const { name, href } = req.body;
-      const insertList = await getConnection()
-        .createQueryBuilder()
-        .insert()
-        .into(List)
-        .values({
-          userId: id,
-          name,
-          href,
+
+      let checkList = await getConnection()
+        .createQueryBuilder(List, 'list')
+        .where('list.href = :href', { href })
+        .getOne();
+
+      let insertList;
+      if (!checkList) {
+        insertList = await getConnection()
+          .createQueryBuilder()
+          .insert()
+          .into(List)
+          .values({
+            name,
+            href,
+          })
+          .execute();
+      }
+      let checkUserList = await getConnection()
+        .createQueryBuilder(UserList, 'userList')
+        .where('userList.list_id = :list_id', {
+          list_id: checkList ? checkList.id : insertList.raw.insertId,
         })
-        .execute();
-      const insertUserList = await getConnection()
-        .createQueryBuilder()
-        .insert()
-        .into(UserList)
-        .values({
-          userId: id,
-          listId: insertList.raw.insertId,
-        })
-        .execute();
+        .where('userList.user_id = :user_id', { user_id: id })
+        .getOne();
+
+      if (!checkUserList) {
+        let insertUserList = await getConnection()
+          .createQueryBuilder()
+          .insert()
+          .into(UserList)
+          .values({
+            userId: id,
+            listId: insertList.raw.insertId,
+          })
+          .execute();
+      }
+
+      const songs = [];
+      let nextPage: undefined | string;
+
+      const youtube = google.youtube({
+        version: 'v3',
+        auth: `${process.env.GOOGLE_API_KEY}`,
+      });
+      while (true) {
+        const result = await youtube.playlistItems.list({
+          playlistId: href,
+          part: ['snippet'],
+          maxResults: 50,
+          pageToken: nextPage === undefined ? null : nextPage,
+        });
+        const items = result.data.items.map((el) => {
+          return {
+            name: el.snippet.title,
+            href: el.snippet.resourceId.videoId,
+            uploader: el.snippet.videoOwnerChannelTitle || '',
+            uploader_href: el.snippet.videoOwnerChannelId || '',
+          };
+        });
+        songs.push(...items);
+        await getConnection()
+          .createQueryBuilder()
+          .update(Quota)
+          .set({
+            quota: () => 'quota + 1',
+          })
+          .where('date_utc = :date', { date: TODAY })
+          .execute();
+        countQuota++;
+        nextPage = result.data.nextPageToken;
+        if (!nextPage) break;
+      }
+      let songQueryBuilder = await getConnection().createQueryBuilder(
+        Song,
+        'song'
+      );
+      let songListQueryBuilder = await getConnection().createQueryBuilder(
+        SongList,
+        'songList'
+      );
+      songs.forEach(async (song, idx) => {
+        const checkSong = await songQueryBuilder
+          .where('song.href = :href', { href: song.href })
+          .getOne();
+        let insertSong;
+        if (!checkSong) {
+          insertSong = await songQueryBuilder
+            .insert()
+            .into(Song)
+            .values(song)
+            .execute();
+        }
+        if (!checkList) {
+          await songListQueryBuilder
+            .insert()
+            .into(SongList)
+            .values({
+              songId: checkSong ? checkSong.id : insertSong.raw.insertId,
+              listId: insertList.raw.insertId,
+            })
+            .execute();
+        }
+      });
 
       res.status(201).json({
-        data: { ...insertList.generatedMaps[0], name, href },
+        data: { name, href },
         message: 'OK',
       });
     } catch (err) {

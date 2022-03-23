@@ -9,9 +9,7 @@ import {
 } from "typeorm";
 import { SongList } from "./SongList";
 import { UserList } from "./UserList";
-import { User } from "./User";
 
-@Index("user_id", ["userId"], {})
 @Entity("list", { schema: "ypdb" })
 export class List {
   @PrimaryGeneratedColumn({ type: "int", name: "id" })
@@ -19,9 +17,6 @@ export class List {
 
   @Column("varchar", { name: "name", length: 180 })
   name: string;
-
-  @Column("int", { name: "user_id" })
-  userId: number;
 
   @Column("varchar", { name: "href", length: 64 })
   href: string;
@@ -37,11 +32,4 @@ export class List {
 
   @OneToMany(() => UserList, (userList) => userList.list)
   userLists: UserList[];
-
-  @ManyToOne(() => User, (user) => user.lists, {
-    onDelete: "NO ACTION",
-    onUpdate: "CASCADE",
-  })
-  @JoinColumn([{ name: "user_id", referencedColumnName: "id" }])
-  user: User;
 }

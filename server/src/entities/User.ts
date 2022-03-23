@@ -15,7 +15,4 @@ export class User {
 
   @OneToMany(() => UserList, (userList) => userList.user)
   userLists: UserList[];
-
-  @OneToMany(() => List, (list) => list.user)
-  lists: List[];
 }

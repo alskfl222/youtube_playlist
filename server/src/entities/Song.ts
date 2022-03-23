@@ -8,18 +8,18 @@ export class Song {
 
   @Column("varchar", { name: "name", length: 180 })
   name: string;
+  
+  @Column("varchar", { name: "href", length: 64 })
+  href: string;
 
   @Column("varchar", { name: "uploader", length: 180 })
   uploader: string;
 
-  @Column("varchar", { name: "href", length: 64 })
-  href: string;
+  @Column("varchar", { name: "uploader_href", length: 64 })
+  uploader_href: string;
 
   @Column("timestamp", { name: "added_at", default: () => "CURRENT_TIMESTAMP" })
   addedAt: Date;
-
-  @Column("tinyint", { name: "deleted", width: 1, default: () => "'0'" })
-  deleted: boolean;
 
   @OneToMany(() => SongList, (songList) => songList.song)
   songLists: SongList[];
