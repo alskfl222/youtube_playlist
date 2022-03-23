@@ -20,7 +20,12 @@ const listsController = {
     try {
       const tokenData = token.isAuthorized(req);
       if (!tokenData) {
-        return res.status(401).send('Not Authorized');
+        const list = await getConnection()
+          .createQueryBuilder(List, 'list')
+          .limit(10)
+          .getMany();
+        console.log(list);
+        return res.status(200).json({ data: list, message: 'OK' });
       }
       const { data } = tokenData;
       const { email } = data;
@@ -282,6 +287,20 @@ const listsController = {
         data: { name, href },
         message: 'OK',
       });
+    } catch (err) {
+      res.status(500).send({
+        message: 'Internal server error',
+      });
+      next(err);
+    }
+  },
+  delete: async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const tokenData = token.isAuthorized(req);
+      if (!tokenData) {
+        return res.status(401).send('Not Authorized');
+      }
+      console.log(req.body);
     } catch (err) {
       res.status(500).send({
         message: 'Internal server error',

@@ -14,7 +14,7 @@ export default {
       expiresIn: 60 * 60 * 1000, // 1 hr
     }),
   sendAccessToken: (res: Response, data: tokenData, accessToken: string) => {
-    res.cookie('authorization', `Bearer ${accessToken}`, {
+    res.cookie('Authorization', `Bearer ${accessToken}`, {
       // domain: process.env.SERVER_DOMAIN,
       path: '/',
       maxAge: 10 * 60 * 60 * 1000, // 1 + 9 hr
@@ -25,7 +25,7 @@ export default {
     res.json({ data, message: "OK" });
   },
   isAuthorized: (req: Request) => {
-    const authorization = req.cookies.authorization;
+    const authorization = req.cookies.Authorization;
     if (!authorization) {
       return null;
     }

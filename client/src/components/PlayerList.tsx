@@ -49,15 +49,15 @@ const PlayerList = (props: any) => {
         if (item.title === 'Deleted video') return null;
         return (
           <ItemBox
-            key={item.songHref}
+            key={item.href}
             onClick={() => {
               choice(index);
               close()
             }}
             current={index === queue ? true : false}
           >
-            <ItemTitle>{item.title}</ItemTitle>
-            <ItemOwnerChannel>{item.videoOwnerChannelTitle}</ItemOwnerChannel>
+            <ItemTitle>{item.name}</ItemTitle>
+            <ItemOwnerChannel>{item.uploader}</ItemOwnerChannel>
           </ItemBox>
         );
       })}

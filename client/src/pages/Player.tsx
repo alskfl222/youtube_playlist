@@ -83,7 +83,7 @@ const Player = () => {
 
   useEffect(() => {
     if (!isLoading) {
-      player?.loadVideoById(items[queue].songHref);
+      player?.loadVideoById(items[queue].href);
       console.log(items[queue]);
     }
     // eslint-disable-next-line
@@ -103,12 +103,12 @@ const Player = () => {
       <div>
         {items.length > 0 && (
           <div>
-            <p>{items[queue].title}</p>
+            <p>{items[queue].name}</p>
             <p>
               <a
-                href={`https://www.youtube.com/channel/${items[queue].videoOwnerChannelId}`}
+                href={`https://www.youtube.com/channel/${items[queue].uploader_href}`}
               >
-                {items[queue].videoOwnerChannelTitle}
+                {items[queue].uploader}
               </a>
             </p>
           </div>

@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { checkQuota, searchList, addList } from '../apis';
 import styled from 'styled-components';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCirclePlus } from '@fortawesome/free-solid-svg-icons';
 
 const Container = styled.div`
   width: 100%;
@@ -55,15 +57,15 @@ const ResultsMsg = styled.div`
 
 const PlaylistContainer = styled.div`
   width: 100%;
-  height: 240px;
   display: flex;
   align-items: center;
   border-radius: 12px;
   box-shadow: 1px 1px 1px 1px black;
 
   img {
-    height: 200px;
-    padding: 0 1rem;
+    width: 50%;
+    max-width: 320px;
+    padding: 1rem;
   }
   a {
     text-decoration: none;
@@ -79,20 +81,26 @@ const PlaylistContainer = styled.div`
   button {
     border: none;
   }
+  @media screen and (max-width: 480px) {
+    flex-direction: column;
+  }
 `;
 
 const PlaylistDescContainer = styled.div`
   width: 100%;
   padding: 0 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+
+  & > div {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
 `;
 
 const PlaylistAddBtn = styled.button`
-  width: 6rem;
-  margin: 0 1rem;
-  padding: 1rem;
+  padding: 2rem;
+  background-color: transparent;
+  font-size: 2rem;
 `;
 
 const SearchList = () => {
@@ -100,47 +108,48 @@ const SearchList = () => {
   const [results, setResults] = useState<any[]>([]);
   const [quota, setQuota] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const handleQuery = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value);
   };
 
   const handleSearchBtn = async () => {
-    setIsLoading(true)
+    setIsLoading(true);
     const response = await searchList(query);
     console.log(response);
     setQuota(response.quota);
     setResults(response.data);
-    localStorage.setItem('beforeSearch', JSON.stringify(results))
-    setIsLoading(false)
+    localStorage.setItem('beforeSearch', JSON.stringify(results));
+    setIsLoading(false);
   };
 
   const handlePlaylistAddBtn = async (idx: number) => {
-    setIsLoading(true)
-    console.log("CLICKED BUTTON")
+    setIsLoading(true);
+    console.log('CLICKED BUTTON');
     const listData = {
       name: results[idx].title,
       href: results[idx].href,
-    }
-    await addList(listData).finally(() => setIsLoading(false))    
-  }
+    };
+    await addList(listData).finally(() => setIsLoading(false));
+  };
 
   const checkOnMount = async () => {
-    setIsLoading(true)
+    setIsLoading(true);
     const check = await checkQuota();
     console.log(check);
     setQuota(check.quota);
-    setIsLoading(false)
+    setIsLoading(false);
   };
 
   useEffect(() => {
-    if (!localStorage.getItem("isLogin")) {
-      navigate('/login')
+    if (JSON.parse(localStorage.getItem('isLogin') as string)) {
+      navigate('/login');
+      return;
     }
     checkOnMount();
     if (localStorage.getItem('beforeSearch')) {
-      setResults(JSON.parse(localStorage.getItem('beforeSearch') as string))
+      setResults(JSON.parse(localStorage.getItem('beforeSearch') as string));
     }
   }, []);
 
@@ -164,26 +173,26 @@ const SearchList = () => {
               <PlaylistContainer key={item.title}>
                 <img src={item.thumbnail.url} />
                 <PlaylistDescContainer>
-                  <h4>
-                    <a
-                      href={`https://www.youtube.com/playlist?list=${item.href}`}
-                    >
-                      {item.title}
-                    </a>
-                  </h4>
-                  <h5>
-                    <a
-                      href={`https://www.youtube.com/channel/${item.channelHref}`}
-                    >
-                      {item.channelTitle}
-                    </a>
-                  </h5>
-                  <p>{item.channelDesc}</p>
+                  <div>
+                    <h4>
+                      <a
+                        href={`https://www.youtube.com/playlist?list=${item.href}`}
+                      >
+                        {item.title}
+                      </a>
+                    </h4>
+                    <h5>
+                      <a
+                        href={`https://www.youtube.com/channel/${item.channelHref}`}
+                      >
+                        {item.channelTitle}
+                      </a>
+                    </h5>
+                    {item.channelDesc && <p>{item.channelDesc}</p>}
+                  </div>
                 </PlaylistDescContainer>
                 <PlaylistAddBtn onClick={() => handlePlaylistAddBtn(idx)}>
-                  목록
-                  <br />
-                  추가
+                  <FontAwesomeIcon icon={faCirclePlus} />
                 </PlaylistAddBtn>
               </PlaylistContainer>
             );

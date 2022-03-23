@@ -33,8 +33,6 @@ const PlayerBtn = styled.button`
 
 `
 
-
-
 const Lists = () => {
   const [view, setView] = useState<number>(1);
 

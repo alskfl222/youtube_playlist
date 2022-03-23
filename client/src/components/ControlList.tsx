@@ -43,14 +43,7 @@ const ControlList = () => {
     const fetchData = async () => {
       await listGetAll()
         .then((res) => {
-          if (res.response && res.response.status === 401) {
-            localStorage.setItem('isLogin', 'false');
-            navigate('/login');
-          }
-          return res.data;
-        })
-        .then((data) => {
-          setListItems(data.list);
+          setListItems(res.data);
         })
         .catch((err) => {
           console.log(err);
