@@ -115,9 +115,10 @@ const Player = () => {
         )}
       </div>
       <div>
-        {currentTime.toFixed()} / {duration.toFixed()}
         <button onClick={startPlayer}>start</button>
         <button onClick={stopPlayer}>stop</button>
+        {`${Math.floor(currentTime / 60)} : ${Math.floor(currentTime % 60)}`} /{' '}
+        {`${Math.floor(duration / 60)} : ${Math.floor(duration % 60)}`}
       </div>
       <div>
         <button onClick={handleListsViewerBtn}>open</button>
