@@ -26,10 +26,10 @@ export class PlayerList {
     onDelete: "NO ACTION",
     onUpdate: "CASCADE",
   })
-  @JoinColumn([{ name: "song_id", referencedColumnName: "id" }])
+  @JoinColumn([{ name: "player_id", referencedColumnName: "id" }])
   player: Player;
 
-  @ManyToOne(() => List, (list) => list.songLists, {
+  @ManyToOne(() => List, (list) => list.playerLists, {
     onDelete: "NO ACTION",
     onUpdate: "CASCADE",
   })

@@ -8,5 +8,6 @@ router.get('/', listsController.getAll);
 router.get('/search', listsController.search)
 router.get('/quota', listsController.quota)
 router.post('/', listsController.add);
+router.delete('/', listsController.delete)
 
 export default router;

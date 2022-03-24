@@ -5,7 +5,6 @@ axios.defaults.withCredentials = true;
 export const Login = (code: string) => {
   return axios.post(`${process.env.REACT_APP_API_URL}/users/login`, { code });
 };
-
 export const listGetAll = () => {
   return axios
     .get(`${process.env.REACT_APP_API_URL}/lists`)
@@ -13,26 +12,38 @@ export const listGetAll = () => {
     .catch((err) => err);
 };
 
-export const searchList = (q: string) => {
+export const listSearch = (q: string) => {
   return axios
     .get(`${process.env.REACT_APP_API_URL}/lists/search?q=${q}`)
     .then((result) => result.data);
 };
 
-export const checkQuota = () => {
-  return axios
-    .get(`${process.env.REACT_APP_API_URL}/lists/quota`)
-    .then((result) => result.data);
-};
-
-export const addList = (listData: { name: string; href: string }) => {
+export const listAdd = (listData: { name: string; href: string }) => {
   return axios
     .post(`${process.env.REACT_APP_API_URL}/lists`, listData)
     .then((result) => result.data);
 };
 
-export const getPlayerItems = (hrefs: string[]) => {
+export const listDelete = (hrefs: string[]) => {
   return axios
-    .post(`${process.env.REACT_APP_API_URL}/player`, { hrefs })
+    .delete(`${process.env.REACT_APP_API_URL}/lists`, { data: hrefs })
+    .then((result) => result.data);
+};
+
+export const quotaCheck = () => {
+  return axios
+    .get(`${process.env.REACT_APP_API_URL}/lists/quota`)
+    .then((result) => result.data);
+};
+
+export const playerId = (hrefs: string[]) => {
+  return axios
+    .post(`${process.env.REACT_APP_API_URL}/player`, hrefs)
+    .then((result) => result.data);
+};
+
+export const playerItems = (id: number) => {
+  return axios
+    .get(`${process.env.REACT_APP_API_URL}/player/${id}`)
     .then((result) => result.data);
 };

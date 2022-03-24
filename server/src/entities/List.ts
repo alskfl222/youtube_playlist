@@ -9,6 +9,7 @@ import {
 } from "typeorm";
 import { SongList } from "./SongList";
 import { UserList } from "./UserList";
+import { PlayerList } from "./PlayerList";
 
 @Entity("list", { schema: "ypdb" })
 export class List {
@@ -32,4 +33,7 @@ export class List {
 
   @OneToMany(() => UserList, (userList) => userList.list)
   userLists: UserList[];
+
+  @OneToMany(() => PlayerList, (playerList) => playerList.list)
+  playerLists: PlayerList[];
 }

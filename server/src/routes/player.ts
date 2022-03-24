@@ -4,6 +4,7 @@ import { playerController } from '../controllers';
 
 const router = express.Router();
 
-router.post('/', playerController.getPlayerItems);
+router.post('/', playerController.id)
+router.get('/:id', playerController.items);
 
 export default router;

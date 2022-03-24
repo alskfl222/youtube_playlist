@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { checkQuota, searchList, addList } from '../apis';
+import { quotaCheck, listSearch, listAdd } from '../apis';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCirclePlus } from '@fortawesome/free-solid-svg-icons';
@@ -116,7 +116,7 @@ const SearchList = () => {
 
   const handleSearchBtn = async () => {
     setIsLoading(true);
-    const response = await searchList(query);
+    const response = await listSearch(query);
     console.log(response);
     setQuota(response.quota);
     setResults(response.data);
@@ -131,19 +131,20 @@ const SearchList = () => {
       name: results[idx].title,
       href: results[idx].href,
     };
-    await addList(listData).finally(() => setIsLoading(false));
+    await listAdd(listData).finally(() => setIsLoading(false));
   };
 
   const checkOnMount = async () => {
     setIsLoading(true);
-    const check = await checkQuota();
+    const check = await quotaCheck();
     console.log(check);
     setQuota(check.quota);
     setIsLoading(false);
   };
 
   useEffect(() => {
-    if (JSON.parse(localStorage.getItem('isLogin') as string)) {
+    console.log(JSON.parse(localStorage.getItem('isLogin') as string))
+    if (!JSON.parse(localStorage.getItem('isLogin') as string)) {
       navigate('/login');
       return;
     }
@@ -171,7 +172,7 @@ const SearchList = () => {
           results.map((item, idx) => {
             return (
               <PlaylistContainer key={item.title}>
-                <img src={item.thumbnail.url} />
+                <img src={item.thumbnail.url} alt={item.title}/>
                 <PlaylistDescContainer>
                   <div>
                     <h4>

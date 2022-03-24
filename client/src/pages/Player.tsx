@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
-import { getPlayerItems } from '../apis';
+import { playerItems } from '../apis';
 import styled from 'styled-components';
 import YouTubePlayer from 'youtube-player';
 import PlayerList from '../components/PlayerList';
@@ -72,7 +72,7 @@ const Player = () => {
 
   useEffect(() => {
     const initPlayer = async () => {
-      const res = await getPlayerItems(hrefs);
+      const res = await playerItems(0);
       setItems(res.data);
       setPlayer(YouTubePlayer('youtube-player'));
       setIsLoading(false);
@@ -91,39 +91,47 @@ const Player = () => {
 
   return (
     <>
-      <div id='youtube-player'></div>
-      {isOpenedList && (
-        <PlayerList
-          items={items}
-          queue={queue}
-          choice={handleQueue}
-          close={handleListsViewerBtn}
-        />
-      )}
-      <div>
-        {items.length > 0 && (
+      {!isLoading && items.length > 0 ? (
+        <>
+          <div id='youtube-player'></div>
+          {isOpenedList && (
+            <PlayerList
+              items={items}
+              queue={queue}
+              choice={handleQueue}
+              close={handleListsViewerBtn}
+            />
+          )}
           <div>
-            <p>{items[queue].name}</p>
-            <p>
-              <a
-                href={`https://www.youtube.com/channel/${items[queue].uploader_href}`}
-              >
-                {items[queue].uploader}
-              </a>
-            </p>
+            {items.length > 0 && (
+              <div>
+                <p>{items[queue].name}</p>
+                <p>
+                  <a
+                    href={`https://www.youtube.com/channel/${items[queue].uploader_href}`}
+                  >
+                    {items[queue].uploader}
+                  </a>
+                </p>
+              </div>
+            )}
           </div>
-        )}
-      </div>
-      <div>
-        <button onClick={startPlayer}>start</button>
-        <button onClick={stopPlayer}>stop</button>
-        {`${Math.floor(currentTime / 60)} : ${Math.floor(currentTime % 60)}`} /{' '}
-        {`${Math.floor(duration / 60)} : ${Math.floor(duration % 60)}`}
-      </div>
-      <div>
-        <button onClick={handleListsViewerBtn}>open</button>
-      </div>
-      <PlayerChat />
+          <div>
+            <button onClick={startPlayer}>start</button>
+            <button onClick={stopPlayer}>stop</button>
+            {`${Math.floor(currentTime / 60)} : ${Math.floor(
+              currentTime % 60
+            )}`}{' '}
+            / {`${Math.floor(duration / 60)} : ${Math.floor(duration % 60)}`}
+          </div>
+          <div>
+            <button onClick={handleListsViewerBtn}>open</button>
+          </div>
+          <PlayerChat />
+        </>
+      ) : (
+        isLoading ? <div>로딩중입니다</div> : <div>목록이 없습니다</div>
+      )}
     </>
   );
 };

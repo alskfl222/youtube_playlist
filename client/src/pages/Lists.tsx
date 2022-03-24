@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import ControlList from '../components/ControlList';
 import SearchList from '../components/SearchList';
 import styled from 'styled-components';
@@ -29,9 +28,6 @@ const TabTitle = styled.button`
   border: none;
   cursor: pointer;
 `;
-const PlayerBtn = styled.button`
-
-`
 
 const Lists = () => {
   const [view, setView] = useState<number>(1);

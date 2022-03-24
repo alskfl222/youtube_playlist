@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { getConnection } from 'typeorm';
+import { Brackets, getConnection } from 'typeorm';
 
 import { google } from 'googleapis';
 
@@ -20,15 +20,15 @@ const listsController = {
     try {
       const tokenData = token.isAuthorized(req);
       if (!tokenData) {
-        const list = await getConnection()
+        const lists = await getConnection()
           .createQueryBuilder(List, 'list')
           .limit(10)
           .getMany();
-        console.log(list);
-        return res.status(200).json({ data: list, message: 'OK' });
+        return res
+          .status(200)
+          .json({ username: undefined, lists, message: 'OK' });
       }
-      const { data } = tokenData;
-      const { email } = data;
+      const { name, email } = tokenData.data;
       const listAll = await getConnection()
         .createQueryBuilder(User, 'user')
         .innerJoinAndSelect('user.userLists', 'userLists')
@@ -36,10 +36,12 @@ const listsController = {
         .where('user.email = :email', { email: email })
         .getMany();
       const resData = {
-        username: data.name,
-        list: listAll.length > 0 ? listAll[0].userLists.map((x) => x.list) : [],
+        username: name,
+        lists:
+          listAll.length > 0 ? listAll[0].userLists.map((x) => x.list) : [],
+        message: 'OK',
       };
-      res.status(200).json({ data: resData, message: 'OK' });
+      res.status(200).json(resData);
     } catch (err) {
       res.status(500).send({
         message: 'Internal server error',
@@ -201,9 +203,10 @@ const listsController = {
         .where('userList.list_id = :list_id', {
           list_id: checkList ? checkList.id : insertList.raw.insertId,
         })
-        .where('userList.user_id = :user_id', { user_id: id })
+        .andWhere('userList.user_id = :user_id', { user_id: id })
         .getOne();
-
+      
+      console.log(checkList)
       if (!checkUserList) {
         let insertUserList = await getConnection()
           .createQueryBuilder()
@@ -211,7 +214,7 @@ const listsController = {
           .into(UserList)
           .values({
             userId: id,
-            listId: insertList.raw.insertId,
+            listId: checkList ? checkList.id : insertList.raw.insertId,
           })
           .execute();
       }
@@ -294,15 +297,34 @@ const listsController = {
       next(err);
     }
   },
+
   delete: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const tokenData = token.isAuthorized(req);
       if (!tokenData) {
         return res.status(401).send('Not Authorized');
       }
-      console.log(req.body);
+      const hrefs = req.body;
+      const { email } = tokenData.data;
+      let checkUserList = await getConnection()
+        .createQueryBuilder(List, 'list')
+        .innerJoinAndSelect('list.userLists', 'userLists')
+        .innerJoinAndSelect('userLists.user', 'user')
+        .where('user.email = :email', { email })
+        .andWhere('list.href IN (:...hrefs)', { hrefs })
+        .getMany();
+      let deleteUserList = await getConnection()
+        .createQueryBuilder()
+        .delete()
+        .from(UserList)
+        .where('id = :id', {
+          id: checkUserList.map((check) => check.userLists[0].id),
+        })
+        .execute();
+      console.log(deleteUserList)
+      res.status(200).json({ message: 'OK' });
     } catch (err) {
-      res.status(500).send({
+      res.status(500).json({
         message: 'Internal server error',
       });
       next(err);
