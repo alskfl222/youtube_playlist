@@ -9,9 +9,7 @@ const Container = styled.div`
   flex-direction: column;
 `;
 
-const PlayerBtn = styled.button`
-
-`
+const PlayerBtn = styled.button``;
 const ItemContainer = styled.div`
   width: 100%;
   display: flex;
@@ -19,6 +17,7 @@ const ItemContainer = styled.div`
 `;
 
 const ControlList = () => {
+  const [isLogin, setIsLogin] = useState<boolean>(false);
   const [listItems, setListItems] = useState<any[]>([]);
   const [check, setCheck] = useState<any[]>([]);
   const navigate = useNavigate();
@@ -26,35 +25,50 @@ const ControlList = () => {
   const makeFullHref = (href: string) => {
     return `https://www.youtube.com/playlist?list=${href}`;
   };
-  const handlePlayerBtn = async () => {
-    const hrefs = check.map(list => list.href) as string[]
-    const res = await playerId(hrefs)
-    console.log(res)
+  const handlePlayerBtn = () => {
+    const hrefs = check.map((list) => list.href) as string[];
+    playerId(hrefs)
+      .then((res) => {
+        navigate(`/player/${res.playerId}`)
+      })
+      .catch((err) => console.log(err));
+  };
 
-    // navigate('/player', { state: check })
-  }
-
-  const handleDeleteBtn = async () => {
-    const hrefs = check.map(list => list.href) as string[]
-    const res = await listDelete(hrefs)
-    setListItems(before => listItems.filter(list => !hrefs.includes(list.href)))
-  }
+  const handleDeleteBtn = () => {
+    const hrefs = check.map((list) => list.href) as string[];
+    listDelete(hrefs)
+      .then((res) => {
+        setListItems((before) =>
+          listItems.filter((list) => !hrefs.includes(list.href))
+        );
+      })
+      .catch((err) => console.log(err));
+  };
 
   const handleCheckbox = (item: any) => {
-    const hrefs = check.map(el => el.href)
-    if (hrefs.includes(item.href)) {
-      setCheck(check.filter(el => el.href !== item.href))
-    } else {
-      setCheck([...check, item])
+    console.log(!JSON.parse(localStorage.getItem('isLogin') as string));
+    if (!JSON.parse(localStorage.getItem('isLogin') as string)) {
+      setCheck((check) => item);
+      return;
     }
-  }
+    const hrefs = check.map((el) => el.href);
+    if (hrefs.includes(item.href)) {
+      setCheck(check.filter((el) => el.href !== item.href));
+    } else {
+      setCheck([...check, item]);
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
       await listGetAll()
         .then((res) => {
-          console.log(res)
-          setListItems(listItems => res.lists);
+          setListItems((listItems) => res.lists);
+          if (res.username) {
+            setIsLogin((isLogin) => true);
+          } else {
+            setIsLogin((isLogin) => false);
+          }
         })
         .catch((err) => {
           console.log(err);
@@ -63,6 +77,7 @@ const ControlList = () => {
     fetchData();
     // eslint-disable-next-line
   }, []);
+  console.log(check)
 
   return (
     <Container>
@@ -75,7 +90,18 @@ const ControlList = () => {
           .map((list) => {
             return (
               <ItemContainer key={list.id}>
-                <input type='checkbox' onChange={() => handleCheckbox(list)}></input>
+                {isLogin ? (
+                  <input
+                    type='checkbox'
+                    onChange={() => handleCheckbox(list)}
+                  ></input>
+                ) : (
+                  <input
+                    type='radio'
+                    name='checked-list'
+                    onChange={() => handleCheckbox(list)}
+                  ></input>
+                )}
                 <div>{list.name}</div>
                 <a href={makeFullHref(list.href)}>YOUTUBE LINK</a>
               </ItemContainer>

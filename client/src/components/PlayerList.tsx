@@ -1,9 +1,5 @@
 import styled from 'styled-components';
 
-interface ItemBoxProps {
-  current: boolean
-}
-
 const ListViewer = styled.div`
   position: absolute;
   top: 4rem;
@@ -23,7 +19,7 @@ const ItemBox = styled.div`
   display: flex;
   justify-content: space-between;
   gap: 1rem;
-  font-weight: ${(props: ItemBoxProps) => props.current ? 700 : 400};
+  font-weight: ${(props: { current: boolean }) => (props.current ? 700 : 400)};
 `;
 
 const ItemTitle = styled.span`
@@ -52,7 +48,7 @@ const PlayerList = (props: any) => {
             key={item.href}
             onClick={() => {
               choice(index);
-              close()
+              close();
             }}
             current={index === queue ? true : false}
           >

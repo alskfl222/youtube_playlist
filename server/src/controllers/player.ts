@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { Brackets, getConnection } from 'typeorm';
-import { google } from 'googleapis';
+import { getConnection } from 'typeorm';
 import { Song } from '../entities/Song';
 import { List } from '../entities/List';
 import { Quota } from '../entities/Quota';
@@ -15,7 +14,7 @@ const playerController = {
       const hrefs = req.body;
       hrefs.sort();
       let playerId: undefined | number;
-      let toCheckPlayerId = await getConnection()
+      const toCheckPlayerId = await getConnection()
         .createQueryBuilder(Player, 'player')
         .innerJoin('player.playerLists', 'playerLists')
         .innerJoin('playerLists.list', 'list')
@@ -24,7 +23,7 @@ const playerController = {
         .getMany()
         .then((res) => res.map((player) => player.id));
       for (let checkPlayerId of toCheckPlayerId) {
-        let checkPlayerList = await getConnection()
+        const isPlayerList = await getConnection()
           .createQueryBuilder(List, 'list')
           .innerJoin('list.playerLists', 'playerLists')
           .where('playerLists.playerId = :playerId', {
@@ -42,7 +41,7 @@ const playerController = {
             }
             return true;
           });
-        if (checkPlayerList === true) {
+        if (isPlayerList === true) {
           playerId = checkPlayerId;
           break;
         }
@@ -75,7 +74,10 @@ const playerController = {
           )
           .execute();
       }
-      res.status(200).json({ playerId: playerId ? playerId : insertPlayerId.raw.insertId, message: 'OK' });
+      res.status(200).json({
+        playerId: playerId ? playerId : insertPlayerId.raw.insertId,
+        message: 'OK',
+      });
     } catch (err) {
       res.status(500).send({
         message: 'Internal server error',
@@ -85,23 +87,18 @@ const playerController = {
   },
   items: async (req: Request, res: Response, next: NextFunction) => {
     try {
-      console.log(req.body);
-      const resData = [];
-      for (let href of req.body.hrefs) {
-        let getSongs = await getConnection()
-          .createQueryBuilder(List, 'list')
-          .innerJoinAndSelect('list.songLists', 'songLists')
-          .innerJoinAndSelect('songLists.song', 'song')
-          .where('list.href = :href', { href })
-          .getMany();
-        const songData = getSongs[0].songLists.map((songList) => {
-          return songList.song;
-        });
-        resData.push(...songData);
-      }
+      const id = req.params.id;
+      const songs = await getConnection()
+        .createQueryBuilder(Song, 'song')
+        .innerJoin('song.songLists', 'songLists')
+        .innerJoin('songLists.list', 'list')
+        .innerJoin('list.playerLists', 'playerLists')
+        .innerJoin('playerLists.player', 'player')
+        .where('player.id = :id', { id })
+        .getMany()
 
       res.json({
-        data: resData,
+        data: songs,
         message: 'ok',
       });
     } catch (err) {

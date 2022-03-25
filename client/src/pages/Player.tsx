@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import { playerItems } from '../apis';
 import styled from 'styled-components';
 import YouTubePlayer from 'youtube-player';
@@ -7,7 +7,9 @@ import PlayerList from '../components/PlayerList';
 import PlayerChat from '../components/PlayerChat';
 
 const Player = () => {
-  const { state } = useLocation();
+  const params = useParams();
+  const id = parseInt(params.id as string);
+
   const [items, setItems] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isOpenedList, setIsOpenedList] = useState<boolean>(false);
@@ -16,7 +18,6 @@ const Player = () => {
   const [duration, setDuration] = useState<number>(0);
   const [queue, setQueue] = useState<number>(0);
   const timer = useRef<any>(null);
-  const hrefs = Array.isArray(state) ? state.map((el: any) => el.href) : [];
 
   const startPlayer = () => {
     player?.playVideo();
@@ -71,13 +72,26 @@ const Player = () => {
   };
 
   useEffect(() => {
-    const initPlayer = async () => {
-      const res = await playerItems(0);
-      setItems(res.data);
-      setPlayer(YouTubePlayer('youtube-player'));
-      setIsLoading(false);
+    const initPlayer = () => {
+      playerItems(id)
+        .then((res) => {
+          setItems(res.data);
+          setPlayer(YouTubePlayer('youtube-player'));
+          setIsLoading(false);
+        })
+        .catch((err) => console.log(err));
     };
     initPlayer();
+    return () => {
+      timer.current = null;
+      setItems((items) => []);
+      setIsLoading((isLoading) => true);
+      setIsOpenedList((isOpenedList) => false);
+      setPlayer((player: any) => null);
+      setCurrentTime((currentTime) => 0);
+      setDuration((duration) => 0);
+      setQueue((queue) => 0);
+    };
     // eslint-disable-next-line
   }, []);
 
@@ -91,9 +105,11 @@ const Player = () => {
 
   return (
     <>
+      <div>
+        <div id='youtube-player'></div>
+      </div>
       {!isLoading && items.length > 0 ? (
         <>
-          <div id='youtube-player'></div>
           {isOpenedList && (
             <PlayerList
               items={items}
@@ -129,8 +145,10 @@ const Player = () => {
           </div>
           <PlayerChat />
         </>
+      ) : isLoading ? (
+        <div>로딩중입니다</div>
       ) : (
-        isLoading ? <div>로딩중입니다</div> : <div>목록이 없습니다</div>
+        <div>목록이 없습니다</div>
       )}
     </>
   );

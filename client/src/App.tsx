@@ -33,7 +33,7 @@ function App() {
             element={<Callback />}
           />
           <Route path='/lists' element={<Lists />} />
-          <Route path='/player' element={<Player />} />
+          <Route path='/player/:id' element={<Player />} />
         </Routes>
       </main>
     </Container>
