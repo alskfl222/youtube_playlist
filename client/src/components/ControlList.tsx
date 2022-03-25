@@ -48,7 +48,7 @@ const ControlList = () => {
   const handleCheckbox = (item: any) => {
     console.log(!JSON.parse(localStorage.getItem('isLogin') as string));
     if (!JSON.parse(localStorage.getItem('isLogin') as string)) {
-      setCheck((check) => item);
+      setCheck((check) => [item]);
       return;
     }
     const hrefs = check.map((el) => el.href);
