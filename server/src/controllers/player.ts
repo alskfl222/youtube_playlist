@@ -4,6 +4,8 @@ import { google } from 'googleapis';
 import { Song } from '../entities/Song';
 import { List } from '../entities/List';
 import { Quota } from '../entities/Quota';
+import { Player } from '../entities/Player';
+import { PlayerList } from '../entities/PlayerList';
 import { TODAY } from '../util';
 import 'dotenv/config';
 
@@ -11,24 +13,69 @@ const playerController = {
   id: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const hrefs = req.body;
-      let checkId = await getConnection()
-        .createQueryBuilder(List, 'list')
-        .innerJoinAndSelect('list.playerLists', 'playerLists')
-        .innerJoinAndSelect('playerLists.player', 'player')
-        .where(
-          new Brackets((qb) => {
-            hrefs.forEach((href) => {
-              qb.where('list.href = :href', { href });
-            });
+      hrefs.sort();
+      let playerId: undefined | number;
+      let toCheckPlayerId = await getConnection()
+        .createQueryBuilder(Player, 'player')
+        .innerJoin('player.playerLists', 'playerLists')
+        .innerJoin('playerLists.list', 'list')
+        .select(['player.id'])
+        .where('list.href IN (:...hrefs)', { hrefs })
+        .getMany()
+        .then((res) => res.map((player) => player.id));
+      for (let checkPlayerId of toCheckPlayerId) {
+        let checkPlayerList = await getConnection()
+          .createQueryBuilder(List, 'list')
+          .innerJoin('list.playerLists', 'playerLists')
+          .where('playerLists.playerId = :playerId', {
+            playerId: checkPlayerId,
           })
-        )
-        .getMany();
-      console.log(checkId);
-      if (!checkId) {
-        
+          .getMany()
+          .then((res) => res.map((list) => list.href))
+          .then((check) => {
+            if (check.length !== hrefs.length) {
+              return false;
+            }
+            check.sort();
+            for (let i = 0; i < check.length; i++) {
+              if (check[i] !== hrefs[i]) return false;
+            }
+            return true;
+          });
+        if (checkPlayerList === true) {
+          playerId = checkPlayerId;
+          break;
+        }
       }
-
-      res.status(200).json({ data: req.body, message: 'OK' });
+      let insertPlayerId;
+      if (!playerId) {
+        let listIds = await getConnection()
+          .createQueryBuilder(List, 'list')
+          .select('list.id')
+          .addSelect('list.name')
+          .where('list.href IN (:...hrefs)', { hrefs })
+          .getMany();
+        insertPlayerId = await getConnection()
+          .createQueryBuilder()
+          .insert()
+          .into(Player)
+          .values({})
+          .execute();
+        let insertPlayerList = await getConnection()
+          .createQueryBuilder()
+          .insert()
+          .into(PlayerList)
+          .values(
+            listIds.map((list) => {
+              return {
+                playerId: insertPlayerId.raw.insertId,
+                listId: list.id,
+              };
+            })
+          )
+          .execute();
+      }
+      res.status(200).json({ playerId: playerId ? playerId : insertPlayerId.raw.insertId, message: 'OK' });
     } catch (err) {
       res.status(500).send({
         message: 'Internal server error',
