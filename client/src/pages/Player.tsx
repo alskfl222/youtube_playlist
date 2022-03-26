@@ -9,7 +9,10 @@ import PlayerChat from '../components/PlayerChat';
 const Player = () => {
   const params = useParams();
   const id = parseInt(params.id as string);
+  const location = useLocation();
+  const state: any = location.state;
 
+  const [username, setUsername] = useState<string>('');
   const [items, setItems] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isOpenedList, setIsOpenedList] = useState<boolean>(false);
@@ -100,6 +103,7 @@ const Player = () => {
   };
 
   useEffect(() => {
+    setUsername((username) => state.username);
     const initPlayer = () => {
       playerItems(id)
         .then((res) => {
@@ -171,7 +175,7 @@ const Player = () => {
           <div>
             <button onClick={handleListsViewerBtn}>open</button>
           </div>
-          <PlayerChat />
+          <PlayerChat username={username} playerId={Number(id)} />
         </>
       ) : isLoading ? (
         <div>로딩중입니다</div>

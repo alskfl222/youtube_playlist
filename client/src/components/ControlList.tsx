@@ -18,6 +18,7 @@ const ItemContainer = styled.div`
 
 const ControlList = () => {
   const [isLogin, setIsLogin] = useState<boolean>(false);
+  const [username, setUsername] = useState<string>('');
   const [listItems, setListItems] = useState<any[]>([]);
   const [check, setCheck] = useState<any[]>([]);
   const navigate = useNavigate();
@@ -29,7 +30,7 @@ const ControlList = () => {
     const hrefs = check.map((list) => list.href) as string[];
     playerId(hrefs)
       .then((res) => {
-        navigate(`/player/${res.playerId}`)
+        navigate(`/player/${res.playerId}`, {state: {username}});
       })
       .catch((err) => console.log(err));
   };
@@ -66,8 +67,11 @@ const ControlList = () => {
           setListItems((listItems) => res.lists);
           if (res.username) {
             setIsLogin((isLogin) => true);
+            localStorage.setItem('isLogin', 'true');
+            setUsername((username) => res.username);
           } else {
             setIsLogin((isLogin) => false);
+            localStorage.setItem('isLogin', 'false');
           }
         })
         .catch((err) => {
@@ -77,7 +81,7 @@ const ControlList = () => {
     fetchData();
     // eslint-disable-next-line
   }, []);
-  console.log(check)
+  console.log(check);
 
   return (
     <Container>

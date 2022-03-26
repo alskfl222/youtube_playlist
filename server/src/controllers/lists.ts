@@ -85,8 +85,7 @@ const listsController = {
         q,
         maxResults: 20,
       });
-      console.log('RESPONSE');
-      console.log(result.data.items[0]);
+      console.log('SEARCH RESPONSE');
       await getConnection()
         .createQueryBuilder()
         .update(Quota)
@@ -242,18 +241,18 @@ const listsController = {
           };
         });
         songs.push(...items);
-        await getConnection()
-          .createQueryBuilder()
-          .update(Quota)
-          .set({
-            quota: () => 'quota + 1',
-          })
-          .where('date_utc = :date', { date: TODAY })
-          .execute();
         countQuota++;
         nextPage = result.data.nextPageToken;
         if (!nextPage) break;
       }
+      await getConnection()
+        .createQueryBuilder()
+        .update(Quota)
+        .set({
+          quota: () => `quota + ${countQuota}`,
+        })
+        .where('date_utc = :date', { date: TODAY })
+        .execute();
       let songQueryBuilder = await getConnection().createQueryBuilder(
         Song,
         'song'

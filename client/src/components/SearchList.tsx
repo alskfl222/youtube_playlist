@@ -114,14 +114,23 @@ const SearchList = () => {
     setQuery(e.target.value);
   };
 
-  const handleSearchBtn = async () => {
+  const handleSearchBtn = () => {
     setIsLoading(true);
-    const response = await listSearch(query);
-    console.log(response);
-    setQuota(response.quota);
-    setResults(response.data);
-    localStorage.setItem('beforeSearch', JSON.stringify(results));
-    setIsLoading(false);
+    listSearch(query)
+      .then((res) => {
+        console.log(res);
+        setQuota(quota => res.quota);
+        setResults(results => res.data);
+        localStorage.setItem('beforeSearch', JSON.stringify(res.data));
+      })
+      .catch((err) => console.log(err))
+      .finally(() => setIsLoading(false));
+  };
+
+  const handleEnterToSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleSearchBtn();
+    }
   };
 
   const handlePlaylistAddBtn = async (idx: number) => {
@@ -143,7 +152,7 @@ const SearchList = () => {
   };
 
   useEffect(() => {
-    console.log(JSON.parse(localStorage.getItem('isLogin') as string))
+    console.log(JSON.parse(localStorage.getItem('isLogin') as string));
     if (!JSON.parse(localStorage.getItem('isLogin') as string)) {
       navigate('/login');
       return;
@@ -159,6 +168,9 @@ const SearchList = () => {
       <SearchBarContainer>
         <SearchBar
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleQuery(e)}
+          onKeyUp={(e: React.KeyboardEvent<HTMLInputElement>) =>
+            handleEnterToSearch(e)
+          }
         />
         <SearchBtn
           disabled={quota < 10000 - 100 ? false : true}
@@ -171,8 +183,8 @@ const SearchList = () => {
         ) : results && results.length !== 0 ? (
           results.map((item, idx) => {
             return (
-              <PlaylistContainer key={item.title}>
-                <img src={item.thumbnail.url} alt={item.title}/>
+              <PlaylistContainer key={item.href}>
+                <img src={item.thumbnail.url} alt={item.title} />
                 <PlaylistDescContainer>
                   <div>
                     <h4>
