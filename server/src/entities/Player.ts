@@ -1,5 +1,6 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { PlayerList } from "./PlayerList";
+import { ChatPlayer } from "./ChatPlayer";
 
 @Entity("player", { schema: "ypdb" })
 export class Player {
@@ -11,4 +12,7 @@ export class Player {
 
   @OneToMany(() => PlayerList, (playerList) => playerList.player)
   playerLists: PlayerList[];
+
+  @OneToMany(() => ChatPlayer, (chatPlayer) => chatPlayer.player)
+  chatPlayers: ChatPlayer[];
 }

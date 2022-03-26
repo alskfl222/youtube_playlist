@@ -64,6 +64,34 @@ const Player = () => {
     }
   });
 
+  player?.on('error', async (event: any) => {
+    switch (event.data) {
+      case 2:
+        console.log('Invalid VideoId');
+        setQueue((queue) => queue + 1);
+        break;
+      case 5:
+        console.log('Not Playable');
+        setQueue((queue) => queue + 1);
+        break;
+      case 100:
+        console.log('Not Found');
+        setQueue((queue) => queue + 1);
+        break;
+      case 101:
+        console.log('Not Allowed to Embedded');
+        setQueue((queue) => queue + 1);
+        break;
+      case 150:
+        console.log('Not Allowed to Embedded 2');
+        setQueue((queue) => queue + 1);
+        break;
+      default:
+        console.log(event.data);
+        setQueue((queue) => queue + 1);
+    }
+  });
+
   const handleListsViewerBtn = () => {
     setIsOpenedList((value) => !value);
   };
