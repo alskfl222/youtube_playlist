@@ -18,7 +18,10 @@ const ItemContainer = styled.div`
 
 const ControlList = () => {
   const [isLogin, setIsLogin] = useState<boolean>(false);
-  const [username, setUsername] = useState<string>('');
+  const [userinfo, setUserinfo] = useState<{
+    userId: number;
+    username: string;
+  }>({ userId: -1, username: 'guest' });
   const [listItems, setListItems] = useState<any[]>([]);
   const [check, setCheck] = useState<any[]>([]);
   const navigate = useNavigate();
@@ -30,7 +33,7 @@ const ControlList = () => {
     const hrefs = check.map((list) => list.href) as string[];
     playerId(hrefs)
       .then((res) => {
-        navigate(`/player/${res.playerId}`, {state: {username}});
+        navigate(`/player/${res.playerId}`, { state: userinfo });
       })
       .catch((err) => console.log(err));
   };
@@ -68,7 +71,8 @@ const ControlList = () => {
           if (res.username) {
             setIsLogin((isLogin) => true);
             localStorage.setItem('isLogin', 'true');
-            setUsername((username) => res.username);
+            const resUserInfo = { userId: res.userId, username: res.username };
+            setUserinfo((userinfo) => resUserInfo);
           } else {
             setIsLogin((isLogin) => false);
             localStorage.setItem('isLogin', 'false');
@@ -93,7 +97,7 @@ const ControlList = () => {
           .reverse()
           .map((list) => {
             return (
-              <ItemContainer key={list.id}>
+              <ItemContainer key={list.href}>
                 {isLogin ? (
                   <input
                     type='checkbox'

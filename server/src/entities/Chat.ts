@@ -19,6 +19,9 @@ export class Chat {
   @Column("int", { name: "user_id" })
   userId: number;
 
+  @Column("varchar", { name: "chat", length: 500 })
+  chat: string;
+
   @Column('timestamp', { name: 'added_at', default: () => 'CURRENT_TIMESTAMP' })
   addedAt: Date;
 

@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { useLocation, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { playerItems } from '../apis';
 import styled from 'styled-components';
 import YouTubePlayer from 'youtube-player';
@@ -10,9 +10,10 @@ const Player = () => {
   const params = useParams();
   const id = parseInt(params.id as string);
   const location = useLocation();
-  const state: any = location.state;
+  const state: { userId: number; username: string } | any = location.state;
+  const navigate = useNavigate();
 
-  const [username, setUsername] = useState<string>('');
+  const [userinfo, setUserinfo] = useState<{ userId: number; username: string } | any>('');
   const [items, setItems] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isOpenedList, setIsOpenedList] = useState<boolean>(false);
@@ -103,7 +104,11 @@ const Player = () => {
   };
 
   useEffect(() => {
-    setUsername((username) => state.username);
+    if (!state) {
+      navigate('/lists');
+    } else {
+      setUserinfo((userinfo: any) => state)
+    }
     const initPlayer = () => {
       playerItems(id)
         .then((res) => {
@@ -175,7 +180,7 @@ const Player = () => {
           <div>
             <button onClick={handleListsViewerBtn}>open</button>
           </div>
-          <PlayerChat username={username} playerId={Number(id)} />
+          <PlayerChat userinfo={userinfo} playerId={Number(id)} />
         </>
       ) : isLoading ? (
         <div>로딩중입니다</div>

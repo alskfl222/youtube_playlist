@@ -26,9 +26,15 @@ const listsController = {
           .getMany();
         return res
           .status(200)
-          .json({ username: undefined, lists, message: 'OK' });
+          .json({
+            userId: undefined,
+            username: undefined,
+            lists,
+            message: 'OK',
+          });
       }
-      const { name, email } = tokenData.data;
+      console.log(tokenData.data);
+      const { id, name, email } = tokenData.data;
       const listAll = await getConnection()
         .createQueryBuilder(User, 'user')
         .innerJoinAndSelect('user.userLists', 'userLists')
@@ -36,6 +42,7 @@ const listsController = {
         .where('user.email = :email', { email: email })
         .getMany();
       const resData = {
+        userId: id,
         username: name,
         lists:
           listAll.length > 0 ? listAll[0].userLists.map((x) => x.list) : [],
@@ -204,8 +211,8 @@ const listsController = {
         })
         .andWhere('userList.user_id = :user_id', { user_id: id })
         .getOne();
-      
-      console.log(checkList)
+
+      console.log(checkList);
       if (!checkUserList) {
         let insertUserList = await getConnection()
           .createQueryBuilder()
@@ -320,7 +327,7 @@ const listsController = {
           id: checkUserList.map((check) => check.userLists[0].id),
         })
         .execute();
-      console.log(deleteUserList)
+      console.log(deleteUserList);
       res.status(200).json({ message: 'OK' });
     } catch (err) {
       res.status(500).json({
