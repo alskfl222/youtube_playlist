@@ -1,10 +1,20 @@
 import { useEffect, useState, useRef } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { playerItems } from '../apis';
+import { throttle } from 'lodash';
 import styled from 'styled-components';
 import YouTubePlayer from 'youtube-player';
 import PlayerList from '../components/PlayerList';
 import PlayerChat from '../components/PlayerChat';
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+const PlayerContainer = styled.div`
+  display: flex;
+  justify-content: center;
+`;
 
 const Player = () => {
   const params = useParams();
@@ -13,7 +23,9 @@ const Player = () => {
   const state: { userId: number; username: string } | any = location.state;
   const navigate = useNavigate();
 
-  const [userinfo, setUserinfo] = useState<{ userId: number; username: string } | any>('');
+  const [userinfo, setUserinfo] = useState<
+    { userId: number; username: string } | any
+  >('');
   const [items, setItems] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isOpenedList, setIsOpenedList] = useState<boolean>(false);
@@ -103,22 +115,35 @@ const Player = () => {
     setQueue((queue) => index);
   };
 
+  const getWindowWidth = () => {
+    const { innerWidth: width } = window;
+    return width;
+  };
+
+  const [windowWidth, setWindowWidth] = useState(getWindowWidth());
+
   useEffect(() => {
     if (!state) {
       navigate('/lists');
     } else {
-      setUserinfo((userinfo: any) => state)
+      setUserinfo((userinfo: any) => state);
     }
     const initPlayer = () => {
       playerItems(id)
         .then((res) => {
-          setItems(res.data);
+          setItems((items) => res.data);
           setPlayer(YouTubePlayer('youtube-player'));
           setIsLoading(false);
         })
         .catch((err) => console.log(err));
     };
     initPlayer();
+
+    const handleResize = () => {
+      setWindowWidth((width) => getWindowWidth());
+    };
+    window.addEventListener('resize', throttle(handleResize, 500));
+
     return () => {
       timer.current = null;
       setItems((items) => []);
@@ -128,9 +153,20 @@ const Player = () => {
       setCurrentTime((currentTime) => 0);
       setDuration((duration) => 0);
       setQueue((queue) => 0);
+      window.removeEventListener('resize', throttle(handleResize, 500));
     };
     // eslint-disable-next-line
   }, []);
+
+  useEffect(() => {
+    if (windowWidth < 320 + 32) {
+      player?.setSize(320, 180);
+    } else if (windowWidth < 960 + 32) {
+      player?.setSize(windowWidth - 32, ((windowWidth - 32) / 16) * 9);
+    } else {
+      player?.setSize(960, 540);
+    }
+  }, [player, windowWidth]);
 
   useEffect(() => {
     if (!isLoading) {
@@ -141,10 +177,10 @@ const Player = () => {
   }, [queue, isLoading]);
 
   return (
-    <>
-      <div>
+    <Container>
+      <PlayerContainer>
         <div id='youtube-player'></div>
-      </div>
+      </PlayerContainer>
       {!isLoading && items.length > 0 ? (
         <>
           {isOpenedList && (
@@ -187,7 +223,7 @@ const Player = () => {
       ) : (
         <div>목록이 없습니다</div>
       )}
-    </>
+    </Container>
   );
 };
 

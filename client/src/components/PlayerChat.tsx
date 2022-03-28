@@ -69,7 +69,7 @@ const PlayerChat = (props: any) => {
     <>
       {chats.map((chat) => {
         return (
-          <p>
+          <p key={`${chat.addedAt}`}>
             {chat.userId} - {chat.username} - {chat.chat} - {chat.addedAt}
           </p>
         );
