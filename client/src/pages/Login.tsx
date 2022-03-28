@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 const Container = styled.div`
@@ -12,6 +14,14 @@ const Link = styled.a`
 `;
 
 const Login = () => {
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (JSON.parse(localStorage.getItem('isLogin') as string)) {
+      navigate('/lists')
+    }
+  }, []);
+
   return (
     <Container>
       <div>

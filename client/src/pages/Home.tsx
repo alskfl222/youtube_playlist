@@ -1,4 +1,3 @@
-import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 const Container = styled.div`
@@ -30,14 +29,6 @@ const LandingDesc = styled.p`
   }
 `;
 
-const ImgBox = styled.div`
-  width: 80vw;
-  max-width: calc(960px);
-  height: 45vw;
-  max-height: calc(960px * 9 / 16);
-  border: 1px solid black;
-`;
-
 const Horizon = styled.div`
   width: 80vw;
   max-width: 720px;
@@ -53,11 +44,8 @@ const Link = styled.a`
 `;
 
 const Home = () => {
-  const navigate = useNavigate();
-
   return (
     <Container>
-      <ImgBox />
       <LandingTitle>
         YOUTUBE
         <br />+<br />

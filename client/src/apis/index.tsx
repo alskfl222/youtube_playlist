@@ -2,9 +2,14 @@ import axios from 'axios';
 
 axios.defaults.withCredentials = true;
 
-export const Login = (code: string) => {
+export const login = (code: string) => {
   return axios.post(`${process.env.REACT_APP_API_URL}/users/login`, { code });
 };
+
+export const logout = () => {
+  return axios.post(`${process.env.REACT_APP_API_URL}/users/logout`, {});
+};
+
 export const listGetAll = () => {
   return axios
     .get(`${process.env.REACT_APP_API_URL}/lists`)

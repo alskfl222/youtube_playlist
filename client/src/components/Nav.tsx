@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import { logout } from '../apis';
 
 const NavigationContainer = styled.div`
   position: fixed;
@@ -47,14 +48,39 @@ const LoginBtn = styled.button`
   cursor: pointer;
 `;
 
+const LogoutBtn = styled.button`
+  height: 2rem;
+  padding: 0 0.75rem;
+  border: 1px solid white;
+  border-radius: 1rem;
+  background: transparent;
+  text-align: center;
+  color: white;
+  font-size: 0.75rem;
+  cursor: pointer;
+`;
+
 const Nav = () => {
   const [isLogin, setIsLogin] = useState<boolean>(false);
+
+  const navigate = useNavigate();
+
+  const handleLogoutBtn = () => {
+    logout()
+      .then((res) => {
+        localStorage.setItem('isLogin', 'false');
+        setIsLogin((state) => false);
+        navigate('/');
+      })
+      .catch((err) => console.log(err));
+  };
   useEffect(() => {
     if (JSON.parse(localStorage.getItem('isLogin') as string)) {
-      setIsLogin(true)
+      setIsLogin(state => true);
+    } else {
+      setIsLogin(state => false)
     }
-  }, [])
-  const navigate = useNavigate();
+  }, [localStorage.getItem('isLogin')]);
   return (
     <NavigationContainer>
       <NavContainer>
@@ -63,7 +89,11 @@ const Nav = () => {
           <br />
           PLAYLIST
         </HomeBtn>
-        {!isLogin && <LoginBtn onClick={() => navigate('/login')}>LOGIN</LoginBtn>}
+        {!isLogin ? (
+          <LoginBtn onClick={() => navigate('/login')}>LOGIN</LoginBtn>
+        ) : (
+          <LogoutBtn onClick={handleLogoutBtn}>LOGOUT</LogoutBtn>
+        )}
       </NavContainer>
     </NavigationContainer>
   );

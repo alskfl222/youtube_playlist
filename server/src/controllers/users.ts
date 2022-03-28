@@ -61,11 +61,6 @@ const usersController = {
         id: -1,
         name: googleUserInfo.name,
         email: googleUserInfo.email,
-        // youtube: {
-        //   access_token: tokens.access_token,
-        //   refresh_token: tokens.refresh_token || null,
-        // },
-        // },
       };
       if (!check) {
         const insert = await queryBuilder
@@ -90,6 +85,23 @@ const usersController = {
       next(err);
     }
   },
+  logout: async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      res.clearCookie('Authorization', {
+        // domain: process.env.SERVER_DOMAIN,
+        path: '/',
+        // sameSite: 'none',
+        // secure: true,
+        httpOnly: true,
+      }); //쿠키 클리어
+      res.status(200).send({ message: 'OK' });
+    } catch (err) {
+      res.status(500).send({
+        message: 'Internal server error',
+      });
+      next(err);
+    }
+  }
 };
 
 export default usersController;
