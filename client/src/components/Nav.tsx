@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { logout } from '../apis';
+import { Color } from '../styles';
 
 const NavigationContainer = styled.div`
   position: fixed;
@@ -12,7 +13,7 @@ const NavigationContainer = styled.div`
   height: 4rem;
   display: flex;
   justify-content: center;
-  background-color: #f50;
+  background-color: ${Color.primary};
   box-shadow: rgba(0, 0, 0, 0.2) 0px 2px 8px 0px;
 `;
 
@@ -62,6 +63,7 @@ const LogoutBtn = styled.button`
 
 const Nav = () => {
   const [isLogin, setIsLogin] = useState<boolean>(false);
+  const loginState = localStorage.getItem('isLogin');
 
   const navigate = useNavigate();
 
@@ -74,13 +76,15 @@ const Nav = () => {
       })
       .catch((err) => console.log(err));
   };
+
   useEffect(() => {
     if (JSON.parse(localStorage.getItem('isLogin') as string)) {
       setIsLogin(state => true);
     } else {
       setIsLogin(state => false)
     }
-  }, [localStorage.getItem('isLogin')]);
+  }, [loginState]);
+
   return (
     <NavigationContainer>
       <NavContainer>

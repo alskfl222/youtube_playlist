@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { Device } from '../styles';
 
 const Container = styled.div`
   width: 100%;
@@ -8,28 +9,26 @@ const Container = styled.div`
 `;
 
 const LandingTitle = styled.p`
-  margin-bottom: 1rem;
+  margin-bottom: 3rem;
   text-align: center;
   line-height: 3.5rem;
   font-size: 3rem;
   font-weight: 700;
-
-  @media (max-width: 480px) {
-    margin-bottom: 3rem;
-  }
 `;
 
 const LandingDesc = styled.p`
+  display: none;
   margin-bottom: 3rem;
   text-align: center;
   font-size: 1.5rem;
   font-weight: 500;
-  @media (max-width: 480px) {
-    display: none;
+
+  @media ${Device.mobile} {
+    display: block;
   }
 `;
 
-const Horizon = styled.div`
+const HorizonLine = styled.div`
   width: 80vw;
   max-width: 720px;
   margin: 1rem 0;
@@ -52,14 +51,14 @@ const Home = () => {
         PLAYLIST
       </LandingTitle>
       <LandingDesc>
-        유튜브 재생목록을
+        유튜브 재생목록 여러 개를
         <br />
-        관리할 수 있습니다
+        한번에 이어서 들을 수 있습니다
       </LandingDesc>
       <Link href={`${process.env.REACT_APP_CLIENT_URL}/login`}>
         나만의 목록 만들기
       </Link>
-      <Horizon />
+      <HorizonLine />
       <Link href={`${process.env.REACT_APP_CLIENT_URL}/lists`}>
         기존 목록 보기
       </Link>

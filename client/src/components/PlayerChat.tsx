@@ -58,6 +58,7 @@ const PlayerChat = (props: any) => {
     return () => {
       socket.current.disconnect();
     };
+  // eslint-disable-next-line
   }, []);
 
   const handleChatInput = (e: React.ChangeEvent<HTMLInputElement>) => {
