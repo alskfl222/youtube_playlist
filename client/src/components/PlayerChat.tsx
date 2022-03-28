@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import io from 'socket.io-client';
 import styled from 'styled-components';
+import { playerChatDelete } from '../apis';
 
 const PlayerChat = (props: any) => {
   const { userinfo, playerId } = props;
@@ -23,7 +24,7 @@ const PlayerChat = (props: any) => {
     });
 
     socket.current.emit('join', playerId, userId);
-    socket.current.on(
+    socket.current.once(
       'joinRoom',
       (data: {
         chats: {
@@ -42,7 +43,12 @@ const PlayerChat = (props: any) => {
 
     socket.current.on(
       'newChat',
-      (chat: { userId: number; username: string; chat: string, addedAt: Date; }) => {
+      (chat: {
+        userId: number;
+        username: string;
+        chat: string;
+        addedAt: Date;
+      }) => {
         console.log(chat);
         setChats((befores) => [...befores, chat]);
       }
@@ -65,17 +71,35 @@ const PlayerChat = (props: any) => {
     );
   };
 
+  const deleteChat = (idx: number) => {
+    console.log(chats[idx]);
+    playerChatDelete(playerId, chats[idx])
+      .then((res) => {
+        setChats((chats) => [...chats.slice(0, idx), ...chats.slice(idx + 1)]);
+      })
+      .catch((err) => console.log(err));
+  };
+
   return (
     <>
-      {chats.map((chat) => {
+      {chats.map((chat, idx) => {
         return (
           <p key={`${chat.addedAt}`}>
-            {chat.userId} - {chat.username} - {chat.chat} - {chat.addedAt}
+            {chat.userId} - {chat.username} - {chat.chat} - {chat.addedAt} -{' '}
+            <button
+              disabled={userId === chat.userId ? false : true}
+              onClick={() => deleteChat(idx)}
+            >
+              delete
+            </button>
           </p>
         );
       })}
       <input type='text' onChange={(e) => handleChatInput(e)}></input>
-      <button disabled={userId !== -1 ? false : true} onClick={(e) => sendChat(e)}>
+      <button
+        disabled={userId !== -1 ? false : true}
+        onClick={(e) => sendChat(e)}
+      >
         {userId !== -1 ? 'send' : '로그인 후 가능합니다'}
       </button>
     </>

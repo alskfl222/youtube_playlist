@@ -13,9 +13,6 @@ const Callback = () => {
   }).code;
 
   useEffect(() => {
-    if (!!localStorage.getItem('isLogin')) {
-      navigate('/lists')
-    }
   Login(code as string)
       .then((result) => {
         localStorage.setItem('isLogin', 'true')
@@ -24,7 +21,7 @@ const Callback = () => {
   // eslint-disable-next-line
   }, []);
 
-  return <div>구글 계정으로 로그인 중입니다</div>;
+  return <div>구글 로그인 중입니다</div>;
 };
 
 export default Callback;

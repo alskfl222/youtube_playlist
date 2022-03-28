@@ -47,3 +47,17 @@ export const playerItems = (id: number) => {
     .get(`${process.env.REACT_APP_API_URL}/player/${id}`)
     .then((result) => result.data);
 };
+
+export const playerChatDelete = (
+  id: number,
+  chat: {
+    userId: number;
+    username: string;
+    chat: string;
+    addedAt: Date;
+  }
+) => {
+  return axios
+    .delete(`${process.env.REACT_APP_API_URL}/player/${id}`, { data: chat })
+    .then((result) => result.data);
+};

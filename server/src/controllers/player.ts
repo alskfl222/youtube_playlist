@@ -5,6 +5,8 @@ import { List } from '../entities/List';
 import { Quota } from '../entities/Quota';
 import { Player } from '../entities/Player';
 import { PlayerList } from '../entities/PlayerList';
+import { Chat } from '../entities/Chat';
+import { ChatPlayer } from '../entities/ChatPlayer';
 import { TODAY } from '../util';
 import 'dotenv/config';
 
@@ -95,12 +97,54 @@ const playerController = {
         .innerJoin('list.playerLists', 'playerLists')
         .innerJoin('playerLists.player', 'player')
         .where('player.id = :id', { id })
-        .getMany()
+        .getMany();
 
       res.json({
         data: songs,
         message: 'ok',
       });
+    } catch (err) {
+      res.status(500).send({
+        message: 'Internal server error',
+      });
+      next(err);
+    }
+  },
+
+  chatDelete: async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      let { userId, addedAt } = req.body;
+      addedAt = new Date(addedAt);
+      const checkChat = await getConnection()
+        .createQueryBuilder(Chat, 'chat')
+        .innerJoin('chat.chatPlayers', 'chatPlayers')
+        .select(['chat.id', 'chatPlayers.id'])
+        .where('chat.userId = :userId', { userId })
+        .andWhere('chat.addedAt = :addedAt', { addedAt })
+        .getOne();
+      const chatId = checkChat.id;
+      const chatPlayersId = checkChat.chatPlayers[0].id;
+      console.log(chatId, chatPlayersId);
+      let deleteChatPlayers = await getConnection()
+        .createQueryBuilder()
+        .delete()
+        .from(ChatPlayer)
+        .where('id = :id', {
+          id: chatPlayersId,
+        })
+        .execute();
+      console.log(deleteChatPlayers)
+      let deleteChat = await getConnection()
+        .createQueryBuilder()
+        .delete()
+        .from(Chat)
+        .where('id = :id', {
+          id: chatId,
+        })
+        .execute();
+      console.log(deleteChat)
+
+      res.status(200).send('OK');
     } catch (err) {
       res.status(500).send({
         message: 'Internal server error',
