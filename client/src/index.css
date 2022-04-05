@@ -49,8 +49,5 @@ body {
   flex-direction: column;
   align-items: center;
   background-color: #fff4f1;
-}
-
-main {
-  width: 100%;
+  overflow-x: hidden;
 }
