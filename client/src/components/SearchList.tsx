@@ -2,46 +2,40 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { quotaCheck, listSearch, listAdd } from '../apis';
 import styled from 'styled-components';
+import { Box, TextField } from '@mui/material';
+import { SearchOutlined } from '@mui/icons-material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCirclePlus } from '@fortawesome/free-solid-svg-icons';
+import { Button } from '@mui/material';
 
 const Container = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 1rem;
 `;
 
-const SearchBarContainer = styled.div`
+const SearchBar = styled(Box)`
   width: 100%;
+  height: 4rem;
   display: flex;
   justify-content: center;
-  gap: 0.5rem;
+  align-items: center;
+  gap: 1rem;
+  border-radius: 1rem;
+  background: #fcfcfc;
 `;
 
-const SearchBar = styled.input`
-  width: 70%;
-  min-width: 300px;
-  height: 48px;
-  padding: 0 1.5rem;
+const SearchTextFieldWrapper = styled(TextField)`
   font-size: 1.5rem;
-  border: 1px solid black;
-  border-radius: 24px;
-`;
-
-const SearchBtn = styled.button`
-  width: 60px;
-  height: 48px;
-  background-color: coral;
-  border: none;
-  border-radius: 24px;
-
-  &:disabled {
-    background-color: #666;
+  & input {
+    padding-left: 30px;
   }
 `;
 
 const ResultsContainer = styled.div`
+  width: 100%;
   padding: 1rem;
   display: flex;
   flex-direction: column;
@@ -119,8 +113,8 @@ const SearchList = () => {
     listSearch(query)
       .then((res) => {
         console.log(res);
-        setQuota(quota => res.quota);
-        setResults(results => res.data);
+        setQuota((quota) => res.quota);
+        setResults((results) => res.data);
         localStorage.setItem('beforeSearch', JSON.stringify(res.data));
       })
       .catch((err) => console.log(err))
@@ -165,18 +159,28 @@ const SearchList = () => {
 
   return (
     <Container>
-      <SearchBarContainer>
-        <SearchBar
+      <SearchBar>
+        <SearchTextFieldWrapper
+          fullWidth
+          variant='standard'
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleQuery(e)}
           onKeyUp={(e: React.KeyboardEvent<HTMLInputElement>) =>
             handleEnterToSearch(e)
           }
+          inputProps={{ style: { fontSize: '1.5rem' } }}
+          sx={{
+            width: '70%',
+          }}
+          placeholder='검색어를 입력하세요'
         />
-        <SearchBtn
+        <Button
           disabled={quota < 10000 - 100 ? false : true}
           onClick={handleSearchBtn}
-        />
-      </SearchBarContainer>
+          sx={{ borderRadius: '1rem' }}
+        >
+          <SearchOutlined />
+        </Button>
+      </SearchBar>
       <ResultsContainer>
         {isLoading ? (
           <ResultsMsg>불러오는 중입니다</ResultsMsg>
