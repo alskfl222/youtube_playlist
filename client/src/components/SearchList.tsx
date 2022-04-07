@@ -171,6 +171,7 @@ const SearchList = () => {
     const listData = {
       name: results[idx].title,
       href: results[idx].href,
+      thumbnail: results[idx].thumbnail.url,
     };
     await listAdd(listData).finally(() => setIsLoading(false));
   };

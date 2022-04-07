@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { listGetAll, listDelete, playerId } from '../apis';
 import styled from 'styled-components';
+import { YouTube, Delete, PlaylistPlay } from '@mui/icons-material';
 
 const Container = styled.div`
   width: 100%;
@@ -10,11 +11,89 @@ const Container = styled.div`
   flex-direction: column;
 `;
 
-const PlayerBtn = styled.button``;
-const ItemContainer = styled.div`
+const BtnContainer = styled.div`
   width: 100%;
   display: flex;
-  justify-content: space-between;
+  gap: 1rem;
+`;
+
+const PlayerBtn = styled.button`
+  width: 70%;
+  height: 3rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  border: none;
+  background-color: #fcfcfc;
+  font-size: 1.5rem;
+  cursor: pointer;
+
+  @media (min-width: 768px) {
+    &::before {
+      content: '플레이어 재생';
+    }
+  }
+`;
+
+const DeleteBtn = styled(PlayerBtn)`
+  width: 30%;
+  @media (min-width: 768px) {
+    &::before {
+      content: '선택목록 삭제';
+    }
+  }
+`;
+
+const ListsContainer = styled.div`
+  width: 100%;
+  margin: 1rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+`;
+
+const ListContainer = styled.div`
+  width: 100%;
+  padding: 0 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: .5rem;
+  border-radius: 1rem;
+  background-color: #fcfcfc;
+  box-shadow: 1px 1px 6px 1px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease-in-out;
+
+  &:hover {
+    transform: translateY(-6px);
+  }
+
+  input {
+    width: 5%;
+  }
+  img {
+    width: 20%;
+    padding: 1rem;
+    object-fit: contain;
+  }
+  div {
+    width: 65%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  a {
+    width: 5%;
+    text-decoration: none;
+    color: black;
+  }
+  button {
+    width: 5%;
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+  }
 `;
 
 const ControlList = () => {
@@ -39,8 +118,8 @@ const ControlList = () => {
       .catch((err) => console.log(err));
   };
 
-  const handleDeleteBtn = () => {
-    const hrefs = check.map((list) => list.href) as string[];
+  const handleDeleteBtn = (lists: any[]) => {
+    const hrefs = lists.map((list) => list.href) as string[];
     listDelete(hrefs)
       .then((res) => {
         setListItems((before) =>
@@ -90,32 +169,46 @@ const ControlList = () => {
 
   return (
     <Container>
-      <PlayerBtn onClick={handlePlayerBtn}>PLAYER</PlayerBtn>
-      <button onClick={handleDeleteBtn}>delete</button>
-      {listItems &&
-        listItems
-          .slice()
-          .reverse()
-          .map((list) => {
-            return (
-              <ItemContainer key={list.href}>
-                {isLogin ? (
-                  <input
-                    type='checkbox'
-                    onChange={() => handleCheckbox(list)}
-                  ></input>
-                ) : (
-                  <input
-                    type='radio'
-                    name='checked-list'
-                    onChange={() => handleCheckbox(list)}
-                  ></input>
-                )}
-                <div>{list.name}</div>
-                <a href={makeFullHref(list.href)}>YOUTUBE LINK</a>
-              </ItemContainer>
-            );
-          })}
+      <BtnContainer>
+        <PlayerBtn onClick={handlePlayerBtn}>
+          <PlaylistPlay sx={{ fontSize: '2rem' }} />
+        </PlayerBtn>
+        <DeleteBtn onClick={() => handleDeleteBtn(check)}>
+          <Delete sx={{ fontSize: '2rem' }} />
+        </DeleteBtn>
+      </BtnContainer>
+      <ListsContainer>
+        {listItems &&
+          listItems
+            .slice()
+            .reverse()
+            .map((list) => {
+              return (
+                <ListContainer key={list.href}>
+                  {isLogin ? (
+                    <input
+                      type='checkbox'
+                      onChange={() => handleCheckbox(list)}
+                    ></input>
+                  ) : (
+                    <input
+                      type='radio'
+                      name='checked-list'
+                      onChange={() => handleCheckbox(list)}
+                    ></input>
+                  )}
+                  <img src={list.thumbnail} alt='list image' />
+                  <div>{list.name}</div>
+                  <a href={makeFullHref(list.href)}>
+                    <YouTube sx={{ fontSize: '2rem' }} />
+                  </a>
+                  <button onClick={() => handleDeleteBtn([list])}>
+                    <Delete />
+                  </button>
+                </ListContainer>
+              );
+            })}
+      </ListsContainer>
     </Container>
   );
 };
