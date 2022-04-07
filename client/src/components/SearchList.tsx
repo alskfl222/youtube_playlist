@@ -6,6 +6,7 @@ import { Add, Search } from '@mui/icons-material';
 
 const Container = styled.div`
   width: 100%;
+  margin: 5rem;
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -91,10 +92,8 @@ const PlaylistContainer = styled.div`
 `;
 
 const PlaylistDescContainer = styled.div`
-  position: relative;
   width: 70%;
-  height: fit-content;
-  padding: 0 6rem 0 1rem;
+  padding: 0 8rem 0 1rem;
   
   a {
     text-decoration: none;
@@ -122,10 +121,10 @@ const PlaylistDescContainer = styled.div`
 const PlaylistAddBtn = styled.button`
   position: absolute;
   top: calc(50% - 2rem);
-  right: 1rem;
+  right: 2rem;
   width: 2rem;
   height: 2rem;
-  z-index: 10;
+  z-index: 100;
   padding: 2rem;
   display: flex;
   justify-content: center;
@@ -133,6 +132,7 @@ const PlaylistAddBtn = styled.button`
   background-color: #ccffcc;
   border: none;
   border-radius: 1rem;
+  cursor: pointer;
 `;
 
 const SearchList = () => {

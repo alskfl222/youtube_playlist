@@ -13,18 +13,23 @@ const Container = styled.div`
 `;
 
 const Tab = styled.div`
+  position: fixed;
+  top: 4rem;
   width: 100%;
-  height: 60px;
+  height: 5rem;
+  z-index: 1000;
+  padding-top: 1rem;
   display: flex;
   justify-content: space-evenly;
   align-items: center;
   gap: 1rem;
   background-color: #fcfcfc;
+  box-shadow: 0 2px 1px 1px rgba(0, 0, 0, 0.1);
 `;
 
 const TabTitle = styled.button<{ view: boolean }>`
   width: 30%;
-  min-width: 160px;
+  min-width: 10rem;
   font-size: 2rem;
   font-weight: ${(props) => (props.view ? 700 : 400)};
   text-align: center;
