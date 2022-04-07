@@ -24,7 +24,7 @@ const Tab = styled.div`
   align-items: center;
   gap: 1rem;
   background-color: #fcfcfc;
-  box-shadow: 0 2px 1px 1px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 1px 1px rgba(0, 0, 0, 0.1);
 `;
 
 const TabTitle = styled.button<{ view: boolean }>`

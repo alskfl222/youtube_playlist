@@ -6,6 +6,7 @@ import { YouTube, Delete, PlaylistPlay } from '@mui/icons-material';
 
 const Container = styled.div`
   width: 100%;
+  height: calc(100vh - 4rem);
   margin: 5rem;
   display: flex;
   flex-direction: column;
@@ -59,7 +60,7 @@ const ListContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: .5rem;
+  gap: 0.5rem;
   border-radius: 1rem;
   background-color: #fcfcfc;
   box-shadow: 1px 1px 6px 1px rgba(0, 0, 0, 0.2);
@@ -71,10 +72,12 @@ const ListContainer = styled.div`
 
   input {
     width: 5%;
+    transform: scale(1.5);
   }
   img {
     width: 20%;
     padding: 1rem;
+    border-radius: 4px;
     object-fit: contain;
   }
   div {
@@ -85,11 +88,17 @@ const ListContainer = styled.div`
   }
   a {
     width: 5%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     text-decoration: none;
     color: black;
   }
   button {
     width: 5%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     border: none;
     background-color: transparent;
     cursor: pointer;
@@ -184,7 +193,10 @@ const ControlList = () => {
             .reverse()
             .map((list) => {
               return (
-                <ListContainer key={list.href}>
+                <ListContainer
+                  key={list.href}
+                  onClick={() => handleCheckbox(list)}
+                >
                   {isLogin ? (
                     <input
                       type='checkbox'
@@ -203,7 +215,7 @@ const ControlList = () => {
                     <YouTube sx={{ fontSize: '2rem' }} />
                   </a>
                   <button onClick={() => handleDeleteBtn([list])}>
-                    <Delete />
+                    <Delete sx={{ fontSize: '2rem' }} />
                   </button>
                 </ListContainer>
               );

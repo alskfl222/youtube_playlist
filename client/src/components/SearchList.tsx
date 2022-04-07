@@ -6,6 +6,7 @@ import { Add, Search } from '@mui/icons-material';
 
 const Container = styled.div`
   width: 100%;
+  min-height: calc(100vh - 4rem);
   margin: 5rem;
   display: flex;
   flex-direction: column;
