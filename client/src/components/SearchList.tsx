@@ -2,8 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { quotaCheck, listSearch, listAdd } from '../apis';
 import styled from 'styled-components';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCirclePlus } from '@fortawesome/free-solid-svg-icons';
+import { Add, Search } from '@mui/icons-material';
 
 const Container = styled.div`
   width: 100%;
@@ -14,30 +13,41 @@ const Container = styled.div`
 
 const SearchBarContainer = styled.div`
   width: 100%;
+  height: 5rem;
+  padding: 0.5rem 0;
   display: flex;
   justify-content: center;
-  gap: 0.5rem;
+  align-items: center;
+  gap: 2rem;
+  background-color: #fcfcfc;
 `;
 
 const SearchBar = styled.input`
   width: 70%;
   min-width: 300px;
   height: 48px;
-  padding: 0 1.5rem;
+  padding: 0 2rem;
   font-size: 1.5rem;
-  border: 1px solid black;
-  border-radius: 24px;
+  border: none;
+  border-bottom: 1px solid black;
+
+  &:focus {
+    outline: none;
+    border-bottom: 1.5px solid #9999ff;
+  }
 `;
 
 const SearchBtn = styled.button`
-  width: 60px;
-  height: 48px;
+  width: 4rem;
+  height: 3rem;
   background-color: coral;
   border: none;
   border-radius: 24px;
+  cursor: pointer;
 
   &:disabled {
     background-color: #666;
+    cursor: not-allowed;
   }
 `;
 
@@ -47,7 +57,7 @@ const ResultsContainer = styled.div`
   flex-direction: column;
   align-items: center;
   gap: 1rem;
-  border: 1px solid black;
+  background-color: #fcfcfc;
 `;
 
 const ResultsMsg = styled.div`
@@ -56,17 +66,36 @@ const ResultsMsg = styled.div`
 `;
 
 const PlaylistContainer = styled.div`
+  position: relative;
   width: 100%;
+  padding: 1.5rem;
   display: flex;
+  flex-direction: column;
   align-items: center;
+  gap: 1rem;
   border-radius: 12px;
-  box-shadow: 1px 1px 1px 1px black;
+  box-shadow: 1px 1px 6px 1px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease-in-out;
 
   img {
-    width: 50%;
-    max-width: 320px;
-    padding: 1rem;
+    width: 30%;
+    max-width: 270px;
+    border-radius: 6px;
   }
+  &:hover {
+    transform: translateY(-6px);
+  }
+  @media (min-width: 768px) {
+    flex-direction: row;
+  }
+`;
+
+const PlaylistDescContainer = styled.div`
+  position: relative;
+  width: 70%;
+  height: fit-content;
+  padding: 0 6rem 0 1rem;
+  
   a {
     text-decoration: none;
     color: black;
@@ -74,21 +103,14 @@ const PlaylistContainer = styled.div`
   h4,
   h5 {
     margin: 0;
+    white-space: nowrap;
+    word-break: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   p {
     word-break: keep-all;
   }
-  button {
-    border: none;
-  }
-  @media screen and (max-width: 480px) {
-    flex-direction: column;
-  }
-`;
-
-const PlaylistDescContainer = styled.div`
-  width: 100%;
-  padding: 0 1rem;
 
   & > div {
     display: flex;
@@ -98,9 +120,19 @@ const PlaylistDescContainer = styled.div`
 `;
 
 const PlaylistAddBtn = styled.button`
+  position: absolute;
+  top: calc(50% - 2rem);
+  right: 1rem;
+  width: 2rem;
+  height: 2rem;
+  z-index: 10;
   padding: 2rem;
-  background-color: transparent;
-  font-size: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #ccffcc;
+  border: none;
+  border-radius: 1rem;
 `;
 
 const SearchList = () => {
@@ -119,8 +151,8 @@ const SearchList = () => {
     listSearch(query)
       .then((res) => {
         console.log(res);
-        setQuota(quota => res.quota);
-        setResults(results => res.data);
+        setQuota((quota) => res.quota);
+        setResults((results) => res.data);
         localStorage.setItem('beforeSearch', JSON.stringify(res.data));
       })
       .catch((err) => console.log(err))
@@ -175,7 +207,11 @@ const SearchList = () => {
         <SearchBtn
           disabled={quota < 10000 - 100 ? false : true}
           onClick={handleSearchBtn}
-        />
+        >
+          {quota < 10000 - 100 && (
+            <Search sx={{ color: 'white', fontSize: '2rem' }} />
+          )}
+        </SearchBtn>
       </SearchBarContainer>
       <ResultsContainer>
         {isLoading ? (
@@ -203,10 +239,10 @@ const SearchList = () => {
                     </h5>
                     {item.channelDesc && <p>{item.channelDesc}</p>}
                   </div>
+                  <PlaylistAddBtn onClick={() => handlePlaylistAddBtn(idx)}>
+                    <Add sx={{ fontSize: '2rem' }} />
+                  </PlaylistAddBtn>
                 </PlaylistDescContainer>
-                <PlaylistAddBtn onClick={() => handlePlaylistAddBtn(idx)}>
-                  <FontAwesomeIcon icon={faCirclePlus} />
-                </PlaylistAddBtn>
               </PlaylistContainer>
             );
           })

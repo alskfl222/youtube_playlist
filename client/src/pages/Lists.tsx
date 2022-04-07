@@ -11,6 +11,7 @@ const Container = styled.div`
   align-items: center;
   gap: 0.5rem;
 `;
+
 const Tab = styled.div`
   width: 100%;
   height: 60px;
@@ -18,14 +19,18 @@ const Tab = styled.div`
   justify-content: space-evenly;
   align-items: center;
   gap: 1rem;
+  background-color: #fcfcfc;
 `;
-const TabTitle = styled.button`
+
+const TabTitle = styled.button<{ view: boolean }>`
   width: 30%;
   min-width: 160px;
   font-size: 2rem;
-  font-weight: 700;
+  font-weight: ${(props) => (props.view ? 700 : 400)};
   text-align: center;
   border: none;
+  border-bottom: ${props => props.view ? '2px solid black' : '1px solid black'};
+  background-color: transparent;
   cursor: pointer;
 `;
 
@@ -38,16 +43,19 @@ const Lists = () => {
     setView(value);
   };
 
-  const tabContents = [
-    <SearchList />,
-    <ControlList />,
-  ];
+  const tabContents = [<SearchList />, <ControlList />];
 
   return (
     <Container>
       <Tab>
         {tabTitles.map((tab, idx) => (
-          <TabTitle key={idx} onClick={() => handleView(idx)}>{tab}</TabTitle>
+          <TabTitle
+            key={idx}
+            view={idx === view ? true : false}
+            onClick={() => handleView(idx)}
+          >
+            {tab}
+          </TabTitle>
         ))}
       </Tab>
 
