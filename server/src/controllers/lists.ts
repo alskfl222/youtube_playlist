@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { Brackets, getConnection } from 'typeorm';
+import { getConnection } from 'typeorm';
 
 import { google } from 'googleapis';
 
@@ -185,7 +185,7 @@ const listsController = {
       }
       let countQuota = checkQuota ? checkQuota.quota : 0;
       const { id } = tokenData.data;
-      const { name, href } = req.body;
+      const { name, href, thumbnail } = req.body;
 
       let checkList = await getConnection()
         .createQueryBuilder(List, 'list')
@@ -201,6 +201,7 @@ const listsController = {
           .values({
             name,
             href,
+            thumbnail,
           })
           .execute();
       }

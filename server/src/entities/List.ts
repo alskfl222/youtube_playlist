@@ -22,6 +22,9 @@ export class List {
   @Column("varchar", { name: "href", length: 64 })
   href: string;
 
+  @Column("varchar", { name: "thumbnail", length: 300 })
+  thumbnail: string;
+
   @Column("timestamp", { name: "added_at", default: () => "CURRENT_TIMESTAMP" })
   addedAt: Date;
 
