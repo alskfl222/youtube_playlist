@@ -73,6 +73,7 @@ const ListContainer = styled.div`
   input {
     width: 5%;
     transform: scale(1.5);
+    cursor: pointer;
   }
   img {
     width: 20%;
@@ -118,7 +119,7 @@ const ControlList = () => {
   const makeFullHref = (href: string) => {
     return `https://www.youtube.com/playlist?list=${href}`;
   };
-  const handlePlayerBtn = () => {
+  const handleMoveToPlayerBtn = () => {
     const hrefs = check.map((list) => list.href) as string[];
     playerId(hrefs)
       .then((res) => {
@@ -174,12 +175,11 @@ const ControlList = () => {
     fetchData();
     // eslint-disable-next-line
   }, []);
-  console.log(check);
 
   return (
     <Container>
       <BtnContainer>
-        <PlayerBtn onClick={handlePlayerBtn}>
+        <PlayerBtn onClick={handleMoveToPlayerBtn}>
           <PlaylistPlay sx={{ fontSize: '2rem' }} />
         </PlayerBtn>
         <DeleteBtn onClick={() => handleDeleteBtn(check)}>
@@ -195,7 +195,6 @@ const ControlList = () => {
               return (
                 <ListContainer
                   key={list.href}
-                  onClick={() => handleCheckbox(list)}
                 >
                   {isLogin ? (
                     <input
@@ -209,7 +208,7 @@ const ControlList = () => {
                       onChange={() => handleCheckbox(list)}
                     ></input>
                   )}
-                  <img src={list.thumbnail} alt='list image' />
+                  <img src={list.thumbnail} alt='playlist thumbnail' />
                   <div>{list.name}</div>
                   <a href={makeFullHref(list.href)}>
                     <YouTube sx={{ fontSize: '2rem' }} />

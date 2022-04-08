@@ -98,7 +98,7 @@ const playerController = {
         .innerJoin('playerLists.player', 'player')
         .where('player.id = :id', { id })
         .getMany();
-
+      console.log('songs[0]: ', songs[0])
       res.json({
         data: songs,
         message: 'ok',

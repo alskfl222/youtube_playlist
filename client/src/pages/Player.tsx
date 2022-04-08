@@ -12,8 +12,26 @@ const Container = styled.div`
   flex-direction: column;
 `;
 const PlayerContainer = styled.div`
+  padding: 1rem;
   display: flex;
   justify-content: center;
+`;
+const SonginfoContainer = styled.div`
+  width: 100%;
+  height: 4rem;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #fcfcfc;
+  p:first-child {
+    font-weight: 700;
+  }
+  a {
+    color: black;
+    font-weight: 500;
+    text-decoration: none;
+  }
 `;
 
 const Player = () => {
@@ -194,14 +212,16 @@ const Player = () => {
           <div>
             {items.length > 0 && (
               <div>
-                <p>{items[queue].name}</p>
-                <p>
-                  <a
-                    href={`https://www.youtube.com/channel/${items[queue].uploader_href}`}
-                  >
-                    {items[queue].uploader}
-                  </a>
-                </p>
+                <SonginfoContainer>
+                  <p>{items[queue].name}</p>
+                  <p>
+                    <a
+                      href={`https://www.youtube.com/channel/${items[queue].uploader_href}`}
+                    >
+                      {items[queue].uploader}
+                    </a>
+                  </p>
+                </SonginfoContainer>
               </div>
             )}
           </div>

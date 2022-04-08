@@ -24,14 +24,12 @@ const listsController = {
           .createQueryBuilder(List, 'list')
           .limit(10)
           .getMany();
-        return res
-          .status(200)
-          .json({
-            userId: undefined,
-            username: undefined,
-            lists,
-            message: 'OK',
-          });
+        return res.status(200).json({
+          userId: undefined,
+          username: undefined,
+          lists,
+          message: 'OK',
+        });
       }
       console.log(tokenData.data);
       const { id, name, email } = tokenData.data;
@@ -183,7 +181,7 @@ const listsController = {
           })
           .execute();
       }
-      let countQuota = checkQuota ? checkQuota.quota : 0;
+      let countQuota = 0;
       const { id } = tokenData.data;
       const { name, href, thumbnail } = req.body;
 
@@ -194,6 +192,7 @@ const listsController = {
 
       let insertList;
       if (!checkList) {
+        console.log(`새로운 재생목록`);
         insertList = await getConnection()
           .createQueryBuilder()
           .insert()
@@ -213,7 +212,6 @@ const listsController = {
         .andWhere('userList.user_id = :user_id', { user_id: id })
         .getOne();
 
-      console.log(checkList);
       if (!checkUserList) {
         let insertUserList = await getConnection()
           .createQueryBuilder()
@@ -249,10 +247,12 @@ const listsController = {
           };
         });
         songs.push(...items);
-        countQuota++;
+        countQuota = countQuota + 1;
         nextPage = result.data.nextPageToken;
         if (!nextPage) break;
       }
+      console.log('ADD songs:', songs.length);
+      console.log('INCREASE Quota:', countQuota);
       await getConnection()
         .createQueryBuilder()
         .update(Quota)
@@ -269,6 +269,8 @@ const listsController = {
         SongList,
         'songList'
       );
+      let countInsertSong = 0,
+        countInsertSongList = 0;
       songs.forEach(async (song, idx) => {
         const checkSong = await songQueryBuilder
           .where('song.href = :href', { href: song.href })
@@ -280,21 +282,35 @@ const listsController = {
             .into(Song)
             .values(song)
             .execute();
+          countInsertSong++;
         }
-        if (!checkList) {
+
+        const checkSongList = await songListQueryBuilder
+          .where('songList.song_id = :songId', {
+            songId: checkSong ? checkSong.id : insertSong.raw.insertId,
+          })
+          .andWhere('songList.list_id = :listId', {
+            listId: checkList ? checkList.id : insertList.raw.insertId,
+          })
+          .getOne();
+
+        if (!checkSongList) {
           await songListQueryBuilder
             .insert()
             .into(SongList)
             .values({
               songId: checkSong ? checkSong.id : insertSong.raw.insertId,
-              listId: insertList.raw.insertId,
+              listId: checkList ? checkList.id : insertList.raw.insertId,
             })
             .execute();
+          countInsertSongList++;
         }
       });
+      console.log('INSERT NEW SONG COUNT:', countInsertSong);
+      console.log('INSERT NEW SONGLIST COUNT:', countInsertSongList);
 
       res.status(201).json({
-        data: { name, href },
+        data: { name, href, thumbnail },
         message: 'OK',
       });
     } catch (err) {
@@ -312,6 +328,7 @@ const listsController = {
         return res.status(401).send('Not Authorized');
       }
       const hrefs = req.body;
+      console.log(hrefs);
       const { email } = tokenData.data;
       let checkUserList = await getConnection()
         .createQueryBuilder(List, 'list')
@@ -320,16 +337,15 @@ const listsController = {
         .where('user.email = :email', { email })
         .andWhere('list.href IN (:...hrefs)', { hrefs })
         .getMany();
-      let deleteUserList = await getConnection()
-        .createQueryBuilder()
-        .delete()
-        .from(UserList)
-        .where('id = :id', {
-          id: checkUserList.map((check) => check.userLists[0].id),
-        })
-        .execute();
-      console.log(deleteUserList);
-      res.status(200).json({ message: 'OK' });
+      checkUserList.forEach(async (userList) => {
+        let deleteUserList = await getConnection()
+          .createQueryBuilder()
+          .delete()
+          .from(UserList)
+          .where('id = :id', { id: userList.userLists[0].id })
+          .execute();
+        console.log(deleteUserList);
+      });
     } catch (err) {
       res.status(500).json({
         message: 'Internal server error',

@@ -63,7 +63,6 @@ const LogoutBtn = styled.button`
 
 const Nav = () => {
   const [isLogin, setIsLogin] = useState<boolean>(false);
-  const loginState = localStorage.getItem('isLogin');
 
   const navigate = useNavigate();
 
@@ -83,7 +82,7 @@ const Nav = () => {
     } else {
       setIsLogin(state => false)
     }
-  }, [loginState]);
+  }, [localStorage.getItem('isLogin')]);
 
   return (
     <NavigationContainer>
