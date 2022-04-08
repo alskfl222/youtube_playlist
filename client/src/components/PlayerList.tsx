@@ -45,7 +45,7 @@ const PlayerList = (props: any) => {
         if (item.title === 'Deleted video') return null;
         return (
           <ItemBox
-            key={item.href}
+            key={item.href + index}
             onClick={() => {
               choice(index);
               close();

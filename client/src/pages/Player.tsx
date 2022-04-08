@@ -2,35 +2,91 @@ import { useEffect, useState, useRef } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { playerItems } from '../apis';
 import { throttle } from 'lodash';
-import styled from 'styled-components';
 import YouTubePlayer from 'youtube-player';
 import PlayerList from '../components/PlayerList';
 import PlayerChat from '../components/PlayerChat';
+import styled from 'styled-components';
+import { ArrowBack, List, HourglassEmptyOutlined } from '@mui/icons-material';
 
 const Container = styled.div`
   display: flex;
   flex-direction: column;
+  gap: 1rem;
+
+  button {
+    border: none;
+    background: #fcfcfc;
+    cursor: pointer;
+  }
 `;
+
 const PlayerContainer = styled.div`
   padding: 1rem;
   display: flex;
   justify-content: center;
 `;
+
+const PlayerControllerBar = styled.div`
+  width: 100%;
+  height: 5em;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const PlayerControllerContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+`
+
+const ControllerBtn = styled.button`
+  width: 3rem;
+  height: 3rem;
+`;
+
+const ControllerClock = styled.div`
+  height: 3rem;
+  padding: 0 3rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #fcfcfc;
+`;
+
 const SonginfoContainer = styled.div`
   width: 100%;
   height: 4rem;
   padding: 1rem 2rem;
   display: flex;
+  gap: 1rem;
   justify-content: space-between;
   align-items: center;
   background-color: #fcfcfc;
-  p:first-child {
-    font-weight: 700;
-  }
+`;
+
+const SongTitle = styled.p`
+  width: 70%;
+  font-weight: 700;
+  white-space: nowrap;
+  word-break: keep-all;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`;
+
+const SongUploader = styled.p`
+  width: 30%;
+  text-align: right;
+
   a {
     color: black;
     font-weight: 500;
     text-decoration: none;
+    white-space: nowrap;
+    word-break: keep-all;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 `;
 
@@ -211,30 +267,40 @@ const Player = () => {
           )}
           <div>
             {items.length > 0 && (
-              <div>
-                <SonginfoContainer>
-                  <p>{items[queue].name}</p>
-                  <p>
-                    <a
-                      href={`https://www.youtube.com/channel/${items[queue].uploader_href}`}
-                    >
-                      {items[queue].uploader}
-                    </a>
-                  </p>
-                </SonginfoContainer>
-              </div>
+              <SonginfoContainer>
+                <SongTitle>{items[queue].name}</SongTitle>
+                <SongUploader>
+                  <a
+                    href={`https://www.youtube.com/channel/${items[queue].uploader_href}`}
+                  >
+                    {items[queue].uploader}
+                  </a>
+                </SongUploader>
+              </SonginfoContainer>
             )}
           </div>
+          <PlayerControllerBar>
+            <ControllerBtn onClick={() => navigate('/lists')}>
+              <ArrowBack />
+            </ControllerBtn>
+            <PlayerControllerContainer>
+              <ControllerBtn onClick={startPlayer}>start</ControllerBtn>
+              <ControllerBtn onClick={stopPlayer}>stop</ControllerBtn>
+              <ControllerClock>
+                {`${Math.floor(currentTime / 60)} : ${Math.floor(
+                  currentTime % 60
+                )}`}{' '}
+                /{' '}
+                {duration !== 0 ? (
+                  `${Math.floor(duration / 60)} : ${Math.floor(duration % 60)}`
+                ) : (
+                  <HourglassEmptyOutlined />
+                )}
+              </ControllerClock>
+            </PlayerControllerContainer>
+          </PlayerControllerBar>
           <div>
-            <button onClick={startPlayer}>start</button>
-            <button onClick={stopPlayer}>stop</button>
-            {`${Math.floor(currentTime / 60)} : ${Math.floor(
-              currentTime % 60
-            )}`}{' '}
-            / {`${Math.floor(duration / 60)} : ${Math.floor(duration % 60)}`}
-          </div>
-          <div>
-            <button onClick={handleListsViewerBtn}>open</button>
+            <button onClick={handleListsViewerBtn}><List /></button>
           </div>
           <PlayerChat userinfo={userinfo} playerId={Number(id)} />
         </>
