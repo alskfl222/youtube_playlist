@@ -251,7 +251,7 @@ const listsController = {
         nextPage = result.data.nextPageToken;
         if (!nextPage) break;
       }
-      console.log('ADD songs:', songs.length);
+      console.log('SONGS in LIST:', songs.length);
       console.log('INCREASE Quota:', countQuota);
       await getConnection()
         .createQueryBuilder()
@@ -269,8 +269,7 @@ const listsController = {
         SongList,
         'songList'
       );
-      let countInsertSong = 0,
-        countInsertSongList = 0;
+
       songs.forEach(async (song, idx) => {
         const checkSong = await songQueryBuilder
           .where('song.href = :href', { href: song.href })
@@ -282,7 +281,6 @@ const listsController = {
             .into(Song)
             .values(song)
             .execute();
-          countInsertSong++;
         }
 
         const checkSongList = await songListQueryBuilder
@@ -303,11 +301,8 @@ const listsController = {
               listId: checkList ? checkList.id : insertList.raw.insertId,
             })
             .execute();
-          countInsertSongList++;
         }
       });
-      console.log('INSERT NEW SONG COUNT:', countInsertSong);
-      console.log('INSERT NEW SONGLIST COUNT:', countInsertSongList);
 
       res.status(201).json({
         data: { name, href, thumbnail },
