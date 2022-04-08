@@ -14,7 +14,7 @@ export default async function socketEvent(socket: SocketIO.Socket) {
       .innerJoin('chat.chatPlayers', 'chatPlayers')
       .innerJoin('chatPlayers.player', 'player')
       .innerJoin('chat.user', 'user')
-      .select(['chat.userId', 'chat.chat', 'chat.addedAt', 'user.name'])
+      .select(['chat.userId', 'chat.chat', 'chat.createdAt', 'user.name'])
       .where('player.id = :playerId', { playerId })
       .getMany();
     const chats = before.map((chat) => {
@@ -22,7 +22,7 @@ export default async function socketEvent(socket: SocketIO.Socket) {
         userId: chat.userId,
         username: chat.user.name,
         chat: chat.chat,
-        addedAt: chat.addedAt,
+        createdAt: chat.createdAt,
       };
     });
     socket.emit('joinRoom', {
@@ -50,7 +50,12 @@ export default async function socketEvent(socket: SocketIO.Socket) {
           chatId: insertChat.raw.insertId,
         })
         .execute();
-      socket.emit('newChat', { userId, username, chat, addedAt: insertChat.generatedMaps[0].addedAt });
+      socket.emit('newChat', {
+        userId,
+        username,
+        chat,
+        createdAt: insertChat.generatedMaps[0].createdAt,
+      });
     } catch {
       socket.emit('error', 'internal server error');
     }

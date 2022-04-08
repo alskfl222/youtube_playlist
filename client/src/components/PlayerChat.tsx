@@ -12,7 +12,7 @@ const PlayerChat = (props: any) => {
       userId: number;
       username: string;
       chat: string;
-      addedAt: Date;
+      createdAt: Date;
     }[]
   >([]);
   const socket = useRef<any>(null);
@@ -31,7 +31,7 @@ const PlayerChat = (props: any) => {
           userId: number;
           username: string;
           chat: string;
-          addedAt: Date;
+          createdAt: Date;
         }[];
         message: string;
       }) => {
@@ -47,7 +47,7 @@ const PlayerChat = (props: any) => {
         userId: number;
         username: string;
         chat: string;
-        addedAt: Date;
+        createdAt: Date;
       }) => {
         console.log(chat);
         setChats((befores) => [...befores, chat]);
@@ -58,7 +58,7 @@ const PlayerChat = (props: any) => {
     return () => {
       socket.current.disconnect();
     };
-  // eslint-disable-next-line
+    // eslint-disable-next-line
   }, []);
 
   const handleChatInput = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -85,8 +85,8 @@ const PlayerChat = (props: any) => {
     <>
       {chats.map((chat, idx) => {
         return (
-          <p key={`${chat.addedAt}`}>
-            {chat.userId} - {chat.username} - {chat.chat} - {chat.addedAt} -{' '}
+          <p key={`${chat.createdAt}`}>
+            {chat.userId} - {chat.username} - {chat.chat} - {chat.createdAt} -{' '}
             <button
               disabled={userId === chat.userId ? false : true}
               onClick={() => deleteChat(idx)}

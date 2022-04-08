@@ -6,29 +6,32 @@ import {
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
-} from "typeorm";
-import { SongList } from "./SongList";
-import { UserList } from "./UserList";
-import { PlayerList } from "./PlayerList";
+} from 'typeorm';
+import { SongList } from './SongList';
+import { UserList } from './UserList';
+import { PlayerList } from './PlayerList';
 
-@Entity("list", { schema: "ypdb" })
+@Entity('list', { schema: 'ypdb' })
 export class List {
-  @PrimaryGeneratedColumn({ type: "int", name: "id" })
+  @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
   id: number;
 
-  @Column("varchar", { name: "name", length: 180 })
+  @Column('varchar', { name: 'name', length: 180 })
   name: string;
 
-  @Column("varchar", { name: "href", length: 64 })
+  @Column('varchar', { name: 'href', length: 64 })
   href: string;
 
-  @Column("varchar", { name: "thumbnail", length: 300 })
+  @Column('varchar', { name: 'thumbnail', length: 300 })
   thumbnail: string;
 
-  @Column("timestamp", { name: "added_at", default: () => "CURRENT_TIMESTAMP" })
-  addedAt: Date;
+  @Column('timestamp', {
+    name: 'created_at',
+    default: () => 'CURRENT_TIMESTAMP',
+  })
+  createdAt: Date;
 
-  @Column("tinyint", { name: "deleted", width: 1, default: () => "'0'" })
+  @Column('tinyint', { name: 'deleted', width: 1, default: () => "'0'" })
   deleted: boolean;
 
   @OneToMany(() => SongList, (songList) => songList.list)

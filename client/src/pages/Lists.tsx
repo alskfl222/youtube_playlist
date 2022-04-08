@@ -5,11 +5,14 @@ import styled from 'styled-components';
 
 const Container = styled.div`
   width: 100%;
+  margin: 4rem 0 2rem 0;
+  padding: 1rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   gap: 0.5rem;
+  overflow: hidden scroll;
 `;
 
 const Tab = styled.div`
@@ -63,7 +66,6 @@ const Lists = () => {
           </TabTitle>
         ))}
       </Tab>
-
       {tabContents[view]}
     </Container>
   );

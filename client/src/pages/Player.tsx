@@ -1,12 +1,17 @@
 import { useEffect, useState, useRef } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { playerItems } from '../apis';
-import { throttle } from 'lodash';
+import { padStart, throttle } from 'lodash';
 import YouTubePlayer from 'youtube-player';
 import PlayerList from '../components/PlayerList';
 import PlayerChat from '../components/PlayerChat';
 import styled from 'styled-components';
-import { ArrowBack, List, HourglassEmptyOutlined } from '@mui/icons-material';
+import {
+  ArrowBack,
+  List,
+  HourglassEmptyOutlined,
+  ChatBubbleOutline,
+} from '@mui/icons-material';
 
 const Container = styled.div`
   display: flex;
@@ -39,7 +44,7 @@ const PlayerControllerContainer = styled.div`
   display: flex;
   align-items: center;
   gap: 1rem;
-`
+`;
 
 const ControllerBtn = styled.button`
   width: 3rem;
@@ -90,6 +95,12 @@ const SongUploader = styled.p`
   }
 `;
 
+const PlayerTab = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
 const Player = () => {
   const params = useParams();
   const id = parseInt(params.id as string);
@@ -102,7 +113,7 @@ const Player = () => {
   >('');
   const [items, setItems] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [isOpenedList, setIsOpenedList] = useState<boolean>(false);
+  const [tab, setTab] = useState<string>('chat');
   const [player, setPlayer] = useState<any>(null);
   const [currentTime, setCurrentTime] = useState<number>(0);
   const [duration, setDuration] = useState<number>(0);
@@ -182,8 +193,8 @@ const Player = () => {
     }
   });
 
-  const handleListsViewerBtn = () => {
-    setIsOpenedList((value) => !value);
+  const handleTab = (tab: string): void => {
+    setTab((state) => tab);
   };
   const handleQueue = (index: number) => {
     setQueue((queue) => index);
@@ -222,7 +233,7 @@ const Player = () => {
       timer.current = null;
       setItems((items) => []);
       setIsLoading((isLoading) => true);
-      setIsOpenedList((isOpenedList) => false);
+      setTab((tab) => 'chat');
       setPlayer((player: any) => null);
       setCurrentTime((currentTime) => 0);
       setDuration((duration) => 0);
@@ -257,12 +268,12 @@ const Player = () => {
       </PlayerContainer>
       {!isLoading && items.length > 0 ? (
         <>
-          {isOpenedList && (
+          {false && (
             <PlayerList
               items={items}
               queue={queue}
               choice={handleQueue}
-              close={handleListsViewerBtn}
+              close={() => handleTab('chat')}
             />
           )}
           <div>
@@ -287,22 +298,42 @@ const Player = () => {
               <ControllerBtn onClick={startPlayer}>start</ControllerBtn>
               <ControllerBtn onClick={stopPlayer}>stop</ControllerBtn>
               <ControllerClock>
-                {`${Math.floor(currentTime / 60)} : ${Math.floor(
-                  currentTime % 60
+                {`${Math.floor(currentTime / 60)} : ${padStart(
+                  Math.floor(currentTime % 60).toString(),
+                  2,
+                  '0'
                 )}`}{' '}
                 /{' '}
                 {duration !== 0 ? (
-                  `${Math.floor(duration / 60)} : ${Math.floor(duration % 60)}`
+                  `${Math.floor(duration / 60)} : ${padStart(
+                    Math.floor(duration % 60).toString(),
+                    2,
+                    '0'
+                  )}`
                 ) : (
                   <HourglassEmptyOutlined />
                 )}
               </ControllerClock>
             </PlayerControllerContainer>
           </PlayerControllerBar>
-          <div>
-            <button onClick={handleListsViewerBtn}><List /></button>
-          </div>
-          <PlayerChat userinfo={userinfo} playerId={Number(id)} />
+          <PlayerTab>
+            <button onClick={() => handleTab('list')}>
+              <List />
+            </button>
+            <button onClick={() => handleTab('chat')}>
+              <ChatBubbleOutline />
+            </button>
+          </PlayerTab>
+          {tab === 'chat' ? (
+            <PlayerChat userinfo={userinfo} playerId={Number(id)} />
+          ) : (
+            <PlayerList
+              items={items}
+              queue={queue}
+              choice={handleQueue}
+              close={() => handleTab('chat')}
+            />
+          )}
         </>
       ) : isLoading ? (
         <div>로딩중입니다</div>

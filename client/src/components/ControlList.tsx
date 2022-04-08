@@ -7,7 +7,6 @@ import { YouTube, Delete, PlaylistPlay } from '@mui/icons-material';
 const Container = styled.div`
   width: 100%;
   height: calc(100vh - 4rem);
-  margin: 5rem;
   display: flex;
   flex-direction: column;
 `;
@@ -15,7 +14,7 @@ const Container = styled.div`
 const BtnContainer = styled.div`
   width: 100%;
   display: flex;
-  gap: 1rem;
+  gap: 2rem;
 `;
 
 const PlayerBtn = styled.button`
@@ -52,11 +51,15 @@ const ListsContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 1rem;
+
+  &:last-child {
+    padding-bottom: 3rem;
+  }
 `;
 
 const ListContainer = styled.div`
   width: 100%;
-  padding: 0 1rem;
+  padding: 0 2rem;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -82,13 +85,13 @@ const ListContainer = styled.div`
     object-fit: contain;
   }
   div {
-    width: 65%;
+    width: 60%;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
   a {
-    width: 5%;
+    width: 7.5%;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -96,7 +99,7 @@ const ListContainer = styled.div`
     color: black;
   }
   button {
-    width: 5%;
+    width: 7.5%;
     display: flex;
     justify-content: center;
     align-items: center;

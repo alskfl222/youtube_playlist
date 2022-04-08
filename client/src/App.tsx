@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -15,32 +14,23 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-`
+`;
 
 const ContentContainer = styled.div`
   width: 100%;
   min-width: 320px;
   max-width: calc(960px + 2rem);
+  height: 100%;
   min-height: 720px;
   padding: 5rem 1rem 0 1rem;
 `;
 
 function App() {
   const location = useLocation();
-  const [isOpenNav, setIsOpenNav] = useState<boolean>(true)
-
-  useEffect(() => {
-    if (location.pathname === '/') {
-      setIsOpenNav(state => false)
-    } else {
-      setIsOpenNav(state => true)
-    }
-  // eslint-disable-next-line
-  }, [location])
 
   return (
     <Container>
-      {isOpenNav && <Nav />}
+      {location.pathname !== '/' && <Nav />}
       <ContentContainer>
         <Routes>
           <Route path='/' element={<Home />} />

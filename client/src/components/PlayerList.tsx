@@ -1,17 +1,32 @@
 import styled from 'styled-components';
 
-const ListViewer = styled.div`
+const Backdrop = styled.div`
   position: absolute;
-  top: 4rem;
+  top: 0;
   left: 0;
   width: 100vw;
+  display: flex;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.3);
+`
+
+const ListViewer = styled.div`
+  position: relative;
+  top: 4rem;
+  width: calc(100% - 4rem);
   height: calc(100vh - 4rem);
   padding: 0 2rem;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
   background-color: white;
+  overflow: scroll;
 `;
+
+const CloseBtn = styled.button`
+  padding: 2rem;
+  font-size: 1.5rem;
+`
 
 const ItemBox = styled.div`
   width: 100%;
@@ -39,25 +54,27 @@ const ItemOwnerChannel = styled.span`
 const PlayerList = (props: any) => {
   const { items, queue, choice, close } = props;
   return (
-    <ListViewer>
-      <button onClick={close}>close</button>
-      {items.map((item: any, index: number) => {
-        if (item.title === 'Deleted video') return null;
-        return (
-          <ItemBox
-            key={item.href + index}
-            onClick={() => {
-              choice(index);
-              close();
-            }}
-            current={index === queue ? true : false}
-          >
-            <ItemTitle>{item.name}</ItemTitle>
-            <ItemOwnerChannel>{item.uploader}</ItemOwnerChannel>
-          </ItemBox>
-        );
-      })}
-    </ListViewer>
+    <Backdrop>
+      <ListViewer>
+        <CloseBtn onClick={close}>close</CloseBtn>
+        {items.map((item: any, index: number) => {
+          if (item.title === 'Deleted video') return null;
+          return (
+            <ItemBox
+              key={item.href + index}
+              onClick={() => {
+                choice(index);
+                close();
+              }}
+              current={index === queue ? true : false}
+            >
+              <ItemTitle>{item.name}</ItemTitle>
+              <ItemOwnerChannel>{item.uploader}</ItemOwnerChannel>
+            </ItemBox>
+          );
+        })}
+      </ListViewer>
+    </Backdrop>
   );
 };
 
