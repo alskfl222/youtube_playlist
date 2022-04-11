@@ -324,16 +324,14 @@ const Player = () => {
               <ChatBubbleOutline />
             </button>
           </PlayerTab>
-          {tab === 'chat' ? (
-            <PlayerChat userinfo={userinfo} playerId={Number(id)} />
-          ) : (
-            <PlayerList
-              items={items}
-              queue={queue}
-              choice={handleQueue}
-              close={() => handleTab('chat')}
-            />
-          )}
+          <PlayerChat userinfo={userinfo} playerId={Number(id)} />
+          <PlayerList
+            items={items}
+            queue={queue}
+            choice={handleQueue}
+            isOpen={tab === 'list'}
+            close={() => handleTab('chat')}
+          />
         </>
       ) : isLoading ? (
         <div>로딩중입니다</div>
