@@ -17,7 +17,7 @@ const Container = styled.div`
 const ChatsContainer = styled.div`
   width: 100%;
   max-height: 15rem;
-  padding: 1rem 0;
+  padding: 1rem;
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -27,7 +27,7 @@ const ChatsContainer = styled.div`
 const ChatContainer = styled.div`
   align-self: ${(props: { isMine: boolean }) =>
     props.isMine ? 'flex-end' : 'flex-start'};
-  max-width: 50%;
+  max-width: 75%;
   padding: 0 1rem;
   display: flex;
   flex-direction: column;
@@ -196,31 +196,37 @@ const PlayerChat = (props: any) => {
   return (
     <Container>
       <ChatsContainer>
-        {chats.map((chat, idx) => {
-          const isMine = chat.userId === userId;
-          const dateString = chat.createdAt
-            .toString()
-            .split('T')[0]
-            .split('-')
-            .join(' - ');
-          return (
-            <ChatContainer
-              isMine={isMine}
-              key={`${chat.chat}-${chat.createdAt}`}
-            >
-              <ChatStatus isMine={isMine}>
-                {!isMine && <strong>{chat.username} </strong>}
-                {dateString}
-                {isMine && (
-                  <button disabled={!isMine} onClick={() => deleteChat(idx)}>
-                    <Delete sx={{ fontSize: '1.2rem' }} />
-                  </button>
-                )}
-              </ChatStatus>
-              <ChatContent isMine={isMine}>{chat.chat}</ChatContent>
-            </ChatContainer>
-          );
-        })}
+        {chats
+          .slice()
+          .reverse()
+          .map((chat, idx) => {
+            const isMine = chat.userId === userId;
+            const dateString = chat.createdAt
+              .toString()
+              .split('T')[0]
+              .split('-')
+              .join(' - ');
+            return (
+              <ChatContainer
+                isMine={isMine}
+                key={`${chat.chat}-${chat.createdAt}`}
+              >
+                <ChatStatus isMine={isMine}>
+                  {!isMine && <strong>{chat.username} </strong>}
+                  {dateString}
+                  {isMine && (
+                    <button
+                      disabled={!isMine}
+                      onClick={() => deleteChat(chats.length - idx - 1)}
+                    >
+                      <Delete sx={{ fontSize: '1.2rem' }} />
+                    </button>
+                  )}
+                </ChatStatus>
+                <ChatContent isMine={isMine}>{chat.chat}</ChatContent>
+              </ChatContainer>
+            );
+          })}
       </ChatsContainer>
       <InputContainer>
         <InputField

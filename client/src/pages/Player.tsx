@@ -12,8 +12,8 @@ import {
   HourglassEmptyOutlined,
   ChatBubbleOutline,
   PlayCircleFilled,
-  StopCircle,
   PauseCircleFilled,
+  SkipNext,
 } from '@mui/icons-material';
 
 const Container = styled.div`
@@ -68,6 +68,7 @@ const ControllerBtn = styled.button`
 `;
 
 const ControllerClock = styled.div`
+  width: 15rem;
   height: 3rem;
   padding: 0 3rem;
   display: flex;
@@ -152,8 +153,8 @@ const Player = () => {
     player?.pauseVideo();
   };
 
-  const stopPlayer = () => {
-    player?.stopVideo();
+  const skipPlayer = () => {
+    setQueue((queue) => queue + 1);
   };
 
   const startTimer = () => {
@@ -329,8 +330,8 @@ const Player = () => {
               <ControllerBtn onClick={pausePlayer}>
                 <PauseCircleFilled />
               </ControllerBtn>
-              <ControllerBtn onClick={stopPlayer}>
-                <StopCircle />
+              <ControllerBtn onClick={skipPlayer}>
+                <SkipNext />
               </ControllerBtn>
               <ControllerClock>
                 {`${Math.floor(currentTime / 60)} : ${padStart(
