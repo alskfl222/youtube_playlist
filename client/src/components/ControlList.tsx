@@ -75,11 +75,13 @@ const ListContainer = styled.div`
 
   input {
     width: 5%;
+    min-width: 20px;
     transform: scale(1.5);
     cursor: pointer;
   }
   img {
     width: 20%;
+    min-width: 96px;
     padding: 1rem;
     border-radius: 4px;
     object-fit: contain;
@@ -100,6 +102,7 @@ const ListContainer = styled.div`
   }
   button {
     width: 7.5%;
+    min-width: 32px;
     display: flex;
     justify-content: center;
     align-items: center;

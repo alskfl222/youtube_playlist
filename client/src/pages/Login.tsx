@@ -7,15 +7,19 @@ import GoogleLoginFocus from '../images/btn_google_signin_light_focus_web@2x.png
 import GoogleLoginPressed from '../images/btn_google_signin_light_pressed_web@2x.png';
 
 const Container = styled.div`
-  height: 540px;
+  height: calc(100vh - 10rem);
   display: flex;
   justify-content: center;
+  align-items: center;
 `;
 
 const BorderBox = styled.div`
   width: 100%;
+  height: auto;
+  padding: 3rem;
   display: flex;
   flex-direction: column;
+  justify-content: space-evenly;
   align-items: center;
   background-color: #fcfcfc;
   border-radius: 1rem;
@@ -24,12 +28,10 @@ const BorderBox = styled.div`
   img {
     max-width: 100%;
     height: auto;
-    padding: 0 1rem;
   }
 
   @media ${Device.tablet} {
     width: 768px;
-    margin-top: 5rem;
     padding: 2rem;
     flex-direction: row;
     justify-content: space-evenly;
@@ -57,7 +59,7 @@ const HorizonLine = styled.div`
 const VerticalLine = styled.div`
   display: none;
   height: 320px;
-  margin: 0 1rem;
+  margin: 0 3rem;
   border-right: 1px solid black;
 
   @media ${Device.tablet} {
@@ -79,11 +81,6 @@ const Login = () => {
     <Container>
       <BorderBox>
         <Title>
-          YOUTUBE
-          <br />+<br />
-          PLAYLIST
-          <br />
-          <br />
           LOGIN
         </Title>
         <HorizonLine />
