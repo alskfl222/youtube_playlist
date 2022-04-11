@@ -22,13 +22,12 @@ const ListViewer = styled.div`
   position: absolute;
   top: 5rem;
   width: calc(100% - 4rem);
-  min-width: 320px;
+  min-width: 360px;
   max-width: 960px;
-  height: calc(100vh - 7rem);
-  min-width: 480px;
+  height: calc(100vh - 5rem);
   z-index: 2001;
-  margin-bottom: 2rem;
   padding: 2rem;
+  padding-bottom: 7rem;
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -38,13 +37,18 @@ const ListViewer = styled.div`
 `;
 
 const CloseBtn = styled.button`
+  position: fixed;
+  left: 25%;
+  bottom: 3rem;
+  width: 50%;
   margin: 1rem 0;
   padding: 1rem;
-  display: flex;
+  display: ${(props: { isOpen: boolean }) => (props.isOpen ? 'flex' : 'none')};
   justify-content: space-around;
   align-items: center;
   border-radius: 1rem;
   box-shadow: 0 1px 1px 2px rgba(0, 0, 0, 0.1);
+  transition: all 0.5s ease-in-out;
 
   &:hover {
     background-color: rgba(0, 0, 0, 0.3);
@@ -98,7 +102,7 @@ const PlayerList = (props: any) => {
       }}
     >
       <ListViewer>
-        <CloseBtn onClick={close}>
+        <CloseBtn isOpen={isOpen} onClick={close}>
           <YouTube sx={{ fontSize: '2rem' }} />
         </CloseBtn>
         {items.map((item: any, index: number) => {

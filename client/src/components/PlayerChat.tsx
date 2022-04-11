@@ -16,7 +16,7 @@ const Container = styled.div`
 
 const ChatsContainer = styled.div`
   width: 100%;
-  max-height: 15rem;
+  min-height: 20rem;
   padding: 1rem;
   display: flex;
   flex-direction: column;

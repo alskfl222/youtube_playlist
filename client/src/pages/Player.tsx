@@ -138,6 +138,7 @@ const Player = () => {
   >('');
   const [items, setItems] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [next, setNext] = useState<number>(1);
   const [tab, setTab] = useState<string>('chat');
   const [player, setPlayer] = useState<any>(null);
   const [currentTime, setCurrentTime] = useState<number>(0);
@@ -169,9 +170,10 @@ const Player = () => {
       }
       setCurrentTime((currentTime) => 0);
       setDuration((duration) => 0);
-      setQueue((queue) => queue + 1);
+      setQueue(queue => next)
     }
     if (event.data === 1) {
+      setNext(next => queue + 1)
       const newCurrentTime = (await player?.getCurrentTime()) as number;
       setCurrentTime((currentTime) => newCurrentTime);
       if (timer.current !== null) {
@@ -245,7 +247,11 @@ const Player = () => {
     const initPlayer = () => {
       playerItems(id)
         .then((res) => {
-          setItems((items) => res.data);
+          const available = res.data.filter(
+            (item: any) =>
+              !(item.name === 'Deleted video' || item.name === 'Private video')
+          );
+          setItems((items) => available);
           setPlayer(YouTubePlayer('youtube-player'));
           setIsLoading(false);
         })
@@ -289,6 +295,7 @@ const Player = () => {
     }
     // eslint-disable-next-line
   }, [queue, isLoading]);
+
 
   return (
     <Container>
