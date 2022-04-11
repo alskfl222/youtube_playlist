@@ -70,7 +70,7 @@ const ListContainer = styled.div`
   transition: transform 0.3s ease-in-out;
 
   &:hover {
-    transform: translateY(-6px);
+    transform: translateY(-3px);
   }
 
   input {

@@ -85,7 +85,7 @@ const PlaylistContainer = styled.div`
     border-radius: 6px;
   }
   &:hover {
-    transform: translateY(-6px);
+    transform: translateY(-3px);
   }
   @media (min-width: 768px) {
     flex-direction: row;

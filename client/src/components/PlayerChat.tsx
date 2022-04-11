@@ -42,6 +42,12 @@ const ChatStatus = styled.div`
   gap: 0.5rem;
   font-size: 0.8rem;
   color: #333;
+  & button:disabled {
+    &:hover {
+      background-color: #fcfcfc;
+      cursor: default;
+    }
+  }
 `;
 
 const ChatContent = styled.div`
@@ -79,6 +85,7 @@ const InputField = styled.input`
 const Divider = styled.div`
   height: 1.5rem;
   border-right: 1px solid #999;
+  background-color: #fcfcfc;
 `;
 
 const SendBtn = styled.button`
@@ -89,7 +96,16 @@ const SendBtn = styled.button`
   justify-content: center;
   align-items: center;
   background-color: #fcfcfc;
-  border-radius: 0 1rem 1rem 0;
+
+  &#send-btn {
+    border-radius: 0 1rem 1rem 0;
+  }
+  &:disabled {
+    &:hover {
+      background-color: #fcfcfc;
+      cursor: default;
+    }
+  }
 `;
 
 const PlayerChat = (props: any) => {
@@ -193,11 +209,13 @@ const PlayerChat = (props: any) => {
               key={`${chat.chat}-${chat.createdAt}`}
             >
               <ChatStatus isMine={isMine}>
-                {!isMine && `${chat.username} - `}
+                {!isMine && <strong>{chat.username} </strong>}
                 {dateString}
-                <button disabled={!isMine} onClick={() => deleteChat(idx)}>
-                  <Delete sx={{ fontSize: '1.2rem' }} />
-                </button>
+                {isMine && (
+                  <button disabled={!isMine} onClick={() => deleteChat(idx)}>
+                    <Delete sx={{ fontSize: '1.2rem' }} />
+                  </button>
+                )}
               </ChatStatus>
               <ChatContent isMine={isMine}>{chat.chat}</ChatContent>
             </ChatContainer>
@@ -218,10 +236,11 @@ const PlayerChat = (props: any) => {
         ></InputField>
         <Divider />
         <SendBtn
+          id='send-btn'
           disabled={userId !== -1 ? false : true}
           onClick={() => sendChat(inputEl)}
         >
-          {userId !== -1 ? <Send /> : '로그인해야 이용 가능합니다'}
+          <Send />
         </SendBtn>
       </InputContainer>
     </Container>

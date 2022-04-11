@@ -23,8 +23,13 @@ const Container = styled.div`
 
   button {
     border: none;
+    border-radius: 0.5rem;
     background: #fcfcfc;
     cursor: pointer;
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.3);
+    }
   }
 `;
 
@@ -118,7 +123,7 @@ const TabBtn = styled.button`
   height: 3rem;
   border: none;
   background-color: #fcfcfc;
-`
+`;
 
 const Player = () => {
   const params = useParams();
