@@ -11,6 +11,9 @@ import {
   List,
   HourglassEmptyOutlined,
   ChatBubbleOutline,
+  PlayCircleFilled,
+  StopCircle,
+  PauseCircleFilled,
 } from '@mui/icons-material';
 
 const Container = styled.div`
@@ -26,22 +29,30 @@ const Container = styled.div`
 `;
 
 const PlayerContainer = styled.div`
-  padding: 1rem;
+  padding: 1rem 2rem;
   display: flex;
   justify-content: center;
 `;
 
+const PlayerStatusContainer = styled.div`
+  padding: 1rem 2rem 0 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+`;
+
 const PlayerControllerBar = styled.div`
   width: 100%;
-  height: 5em;
-  padding: 1rem 2rem;
+  height: 5rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
 `;
 
 const PlayerControllerContainer = styled.div`
+  width: 100%;
   display: flex;
+  justify-content: flex-end;
   align-items: center;
   gap: 1rem;
 `;
@@ -99,7 +110,15 @@ const PlayerTab = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 1rem;
 `;
+
+const TabBtn = styled.button`
+  width: 100%;
+  height: 3rem;
+  border: none;
+  background-color: #fcfcfc;
+`
 
 const Player = () => {
   const params = useParams();
@@ -122,6 +141,10 @@ const Player = () => {
 
   const startPlayer = () => {
     player?.playVideo();
+  };
+
+  const pausePlayer = () => {
+    player?.pauseVideo();
   };
 
   const stopPlayer = () => {
@@ -267,7 +290,7 @@ const Player = () => {
         <div id='youtube-player'></div>
       </PlayerContainer>
       {!isLoading && items.length > 0 ? (
-        <>
+        <PlayerStatusContainer>
           {false && (
             <PlayerList
               items={items}
@@ -276,27 +299,34 @@ const Player = () => {
               close={() => handleTab('chat')}
             />
           )}
-          <div>
-            {items.length > 0 && (
-              <SonginfoContainer>
-                <SongTitle>{items[queue].name}</SongTitle>
-                <SongUploader>
-                  <a
-                    href={`https://www.youtube.com/channel/${items[queue].uploader_href}`}
-                  >
-                    {items[queue].uploader}
-                  </a>
-                </SongUploader>
-              </SonginfoContainer>
-            )}
-          </div>
+
+          {items.length > 0 && (
+            <SonginfoContainer>
+              <SongTitle>{items[queue].name}</SongTitle>
+              <SongUploader>
+                <a
+                  href={`https://www.youtube.com/channel/${items[queue].uploader_href}`}
+                >
+                  {items[queue].uploader}
+                </a>
+              </SongUploader>
+            </SonginfoContainer>
+          )}
+
           <PlayerControllerBar>
             <ControllerBtn onClick={() => navigate('/lists')}>
               <ArrowBack />
             </ControllerBtn>
             <PlayerControllerContainer>
-              <ControllerBtn onClick={startPlayer}>start</ControllerBtn>
-              <ControllerBtn onClick={stopPlayer}>stop</ControllerBtn>
+              <ControllerBtn onClick={startPlayer}>
+                <PlayCircleFilled />
+              </ControllerBtn>
+              <ControllerBtn onClick={pausePlayer}>
+                <PauseCircleFilled />
+              </ControllerBtn>
+              <ControllerBtn onClick={stopPlayer}>
+                <StopCircle />
+              </ControllerBtn>
               <ControllerClock>
                 {`${Math.floor(currentTime / 60)} : ${padStart(
                   Math.floor(currentTime % 60).toString(),
@@ -317,12 +347,12 @@ const Player = () => {
             </PlayerControllerContainer>
           </PlayerControllerBar>
           <PlayerTab>
-            <button onClick={() => handleTab('list')}>
+            <TabBtn onClick={() => handleTab('list')}>
               <List />
-            </button>
-            <button onClick={() => handleTab('chat')}>
+            </TabBtn>
+            <TabBtn onClick={() => handleTab('chat')}>
               <ChatBubbleOutline />
-            </button>
+            </TabBtn>
           </PlayerTab>
           <PlayerChat userinfo={userinfo} playerId={Number(id)} />
           <PlayerList
@@ -332,7 +362,7 @@ const Player = () => {
             isOpen={tab === 'list'}
             close={() => handleTab('chat')}
           />
-        </>
+        </PlayerStatusContainer>
       ) : isLoading ? (
         <div>로딩중입니다</div>
       ) : (

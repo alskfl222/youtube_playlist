@@ -11,7 +11,7 @@ const Backdrop = styled.div`
   display: flex;
   justify-content: center;
   background-color: rgba(0, 0, 0, 0.3);
-  transition: bottom 1s ease;
+  transition: bottom 1s cubic-bezier(0.075, 0.82, 0.165, 1);
 
   &.open {
     bottom: 0;

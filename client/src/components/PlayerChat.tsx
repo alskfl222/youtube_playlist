@@ -1,7 +1,96 @@
 import React, { useState, useEffect, useRef } from 'react';
 import io from 'socket.io-client';
-import styled from 'styled-components';
 import { playerChatDelete } from '../apis';
+import styled from 'styled-components';
+import { Delete, Send } from '@mui/icons-material';
+
+const Container = styled.div`
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  background-color: #fcfcfc;
+  border-radius: 1rem;
+`;
+
+const ChatsContainer = styled.div`
+  width: 100%;
+  max-height: 15rem;
+  padding: 1rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  overflow: hidden scroll;
+`;
+
+const ChatContainer = styled.div`
+  align-self: ${(props: { isMine: boolean }) =>
+    props.isMine ? 'flex-end' : 'flex-start'};
+  max-width: 50%;
+  padding: 0 1rem;
+  display: flex;
+  flex-direction: column;
+`;
+
+const ChatStatus = styled.div`
+  align-self: ${(props: { isMine: boolean }) =>
+    props.isMine ? 'flex-end' : 'flex-start'};
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: #333;
+`;
+
+const ChatContent = styled.div`
+  padding: 1rem;
+  border: none;
+  border-radius: 0.5rem;
+  background-color: ${(props: { isMine: boolean }) =>
+    props.isMine ? '#ff9' : '#fcfcfc'};
+  box-shadow: 0 1px 10px -1px rgba(0, 0, 0, 0.2);
+  text-align: ${(props: { isMine: boolean }) =>
+    props.isMine ? 'right' : 'left'};
+  word-wrap: break-word;
+`;
+
+const InputContainer = styled.div`
+  width: 100%;
+  height: 5rem;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 1rem 1rem 0 0;
+  background-color: #969696;
+`;
+
+const InputField = styled.input`
+  width: calc(100% - 3rem);
+  height: 3rem;
+  padding-left: 2rem;
+  border: none;
+  border-radius: 1rem 0 0 1rem;
+  font-size: 1.5rem;
+`;
+
+const Divider = styled.div`
+  height: 1.5rem;
+  border-right: 1px solid #999;
+`;
+
+const SendBtn = styled.button`
+  align-self: flex-end;
+  width: 3rem;
+  height: 3rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #fcfcfc;
+  border-radius: 0 1rem 1rem 0;
+`;
 
 const PlayerChat = (props: any) => {
   const { userinfo, playerId } = props;
@@ -16,6 +105,9 @@ const PlayerChat = (props: any) => {
     }[]
   >([]);
   const socket = useRef<any>(null);
+  const inputEl = document.querySelector(
+    '#chat-input-field'
+  ) as HTMLInputElement;
 
   useEffect(() => {
     socket.current = io(`${process.env.REACT_APP_API_URL}`, {
@@ -62,14 +154,18 @@ const PlayerChat = (props: any) => {
   }, []);
 
   const handleChatInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setChat((chat) => e.target.value);
+    if (e.target.value.length <= 140) {
+      setChat((chat) => e.target.value);
+    } else {
+      alert('글자수가 너무 많습니다');
+      inputEl.value = chat;
+    }
   };
 
-  const sendChat = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    e.preventDefault();
-    socket.current.emit('sendChat', playerId, userId, username, chat, () =>
-      setChat('')
-    );
+  const sendChat = (inputEl: HTMLInputElement) => {
+    socket.current.emit('sendChat', playerId, userId, username, chat);
+    setChat((chat) => '');
+    inputEl.value = '';
   };
 
   const deleteChat = (idx: number) => {
@@ -82,28 +178,53 @@ const PlayerChat = (props: any) => {
   };
 
   return (
-    <>
-      {chats.map((chat, idx) => {
-        return (
-          <p key={`${chat.createdAt}`}>
-            {chat.userId} - {chat.username} - {chat.chat} - {chat.createdAt} -{' '}
-            <button
-              disabled={userId === chat.userId ? false : true}
-              onClick={() => deleteChat(idx)}
+    <Container>
+      <ChatsContainer>
+        {chats.map((chat, idx) => {
+          const isMine = chat.userId === userId;
+          const dateString = chat.createdAt
+            .toString()
+            .split('T')[0]
+            .split('-')
+            .join(' - ');
+          return (
+            <ChatContainer
+              isMine={isMine}
+              key={`${chat.chat}-${chat.createdAt}`}
             >
-              delete
-            </button>
-          </p>
-        );
-      })}
-      <input type='text' onChange={(e) => handleChatInput(e)}></input>
-      <button
-        disabled={userId !== -1 ? false : true}
-        onClick={(e) => sendChat(e)}
-      >
-        {userId !== -1 ? 'send' : '로그인 후 가능합니다'}
-      </button>
-    </>
+              <ChatStatus isMine={isMine}>
+                {!isMine && `${chat.username} - `}
+                {dateString}
+                <button disabled={!isMine} onClick={() => deleteChat(idx)}>
+                  <Delete sx={{ fontSize: '1.2rem' }} />
+                </button>
+              </ChatStatus>
+              <ChatContent isMine={isMine}>{chat.chat}</ChatContent>
+            </ChatContainer>
+          );
+        })}
+      </ChatsContainer>
+      <InputContainer>
+        <InputField
+          id='chat-input-field'
+          type='text'
+          onChange={(e) => handleChatInput(e)}
+          onKeyUp={(e) => {
+            e.preventDefault();
+            if (e.key === 'Enter') {
+              sendChat(inputEl);
+            }
+          }}
+        ></InputField>
+        <Divider />
+        <SendBtn
+          disabled={userId !== -1 ? false : true}
+          onClick={() => sendChat(inputEl)}
+        >
+          {userId !== -1 ? <Send /> : '로그인해야 이용 가능합니다'}
+        </SendBtn>
+      </InputContainer>
+    </Container>
   );
 };
 
