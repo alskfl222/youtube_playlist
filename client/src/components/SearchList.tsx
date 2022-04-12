@@ -7,26 +7,28 @@ import { Add, Search } from '@mui/icons-material';
 const Container = styled.div`
   width: 100%;
   min-height: calc(100vh - 4rem);
-  margin: 5rem;
+  margin-bottom: 5rem;
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  overflow-y: hidden;
 `;
 
 const SearchBarContainer = styled.div`
   width: 100%;
   height: 5rem;
-  padding: 0.5rem 0;
+  padding: 0.5rem 1rem;
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 2rem;
+  gap: 1rem;
   background-color: #fcfcfc;
 `;
 
 const SearchBar = styled.input`
+  flex: 1 0 auto;
   width: 70%;
-  min-width: 300px;
+  min-width: 240px;
   height: 48px;
   padding: 0 2rem;
   font-size: 1.5rem;
@@ -40,7 +42,8 @@ const SearchBar = styled.input`
 `;
 
 const SearchBtn = styled.button`
-  width: 4rem;
+  flex: 0 0 auto;
+  width: 3rem;
   height: 3rem;
   background-color: coral;
   border: none;
@@ -50,6 +53,21 @@ const SearchBtn = styled.button`
   &:disabled {
     background-color: #666;
     cursor: not-allowed;
+  }
+`;
+const QuotaViewerContainer = styled.div`
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  svg {
+    transform: rotate(-90deg);
+  }
+  div {
+    position: absolute;
+    text-align: center;
+    line-height: 48px;
   }
 `;
 
@@ -70,6 +88,7 @@ const ResultsMsg = styled.div`
 const PlaylistContainer = styled.div`
   position: relative;
   width: 100%;
+  min-width: 320px;
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
@@ -80,6 +99,7 @@ const PlaylistContainer = styled.div`
   transition: transform 0.3s ease-in-out;
 
   img {
+    display: none;
     width: 30%;
     max-width: 270px;
     border-radius: 6px;
@@ -89,13 +109,16 @@ const PlaylistContainer = styled.div`
   }
   @media (min-width: 768px) {
     flex-direction: row;
+    img {
+      display: inline;
+    }
   }
 `;
 
 const PlaylistDescContainer = styled.div`
-  width: 70%;
-  padding: 0 8rem 0 1rem;
-  
+  width: 100%;
+  padding: 0 4rem 0 1rem;
+
   a {
     text-decoration: none;
     color: black;
@@ -117,23 +140,37 @@ const PlaylistDescContainer = styled.div`
     flex-direction: column;
     gap: 1rem;
   }
+  @media (min-width: 768px) {
+    width: 70%;
+    padding: 0 8rem 0 1rem;
+  }
 `;
 
 const PlaylistAddBtn = styled.button`
   position: absolute;
   top: calc(50% - 2rem);
   right: 2rem;
-  width: 2rem;
-  height: 2rem;
+  width: 1rem;
+  height: 1rem;
   z-index: 100;
-  padding: 2rem;
+  padding: 1rem;
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #ccffcc;
+  background-color: #cfc;
   border: none;
-  border-radius: 1rem;
+  border-radius: 0.5rem;
   cursor: pointer;
+
+  &:hover {
+    background-color: #9f9;
+  }
+  @media (min-width: 768px) {
+    width: 2rem;
+    height: 2rem;
+    padding: 2rem;
+    border-radius: 1rem;
+  }
 `;
 
 const SearchList = () => {
@@ -142,6 +179,19 @@ const SearchList = () => {
   const [quota, setQuota] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const navigate = useNavigate();
+
+  const MAX_QUOTA: number = 10000 - 100;
+  const QUOTA_PROGRESS_WIDTH = 48;
+  const QUOTA_PROGRESS_STROKE = QUOTA_PROGRESS_WIDTH / 4;
+  const QUOTA_PROGRESS_RADIUS =
+    QUOTA_PROGRESS_WIDTH / 2 - QUOTA_PROGRESS_STROKE / 2;
+
+  const getProgressOffset = (quota: number): number => {
+    const progress =
+      Math.round((quota / MAX_QUOTA + Number.EPSILON) * 100) / 100;
+    const totalCircle = 2 * Math.PI * QUOTA_PROGRESS_RADIUS;
+    return totalCircle * (1 - progress);
+  };
 
   const handleQuery = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value);
@@ -179,10 +229,15 @@ const SearchList = () => {
 
   const checkOnMount = async () => {
     setIsLoading(true);
-    const check = await quotaCheck();
-    console.log(check);
-    setQuota(check.quota);
-    setIsLoading(false);
+    try {
+      const check = await quotaCheck();
+      console.log(check);
+      setQuota(check.quota);
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -207,13 +262,39 @@ const SearchList = () => {
           }
         />
         <SearchBtn
-          disabled={quota < 10000 - 100 ? false : true}
+          disabled={quota < MAX_QUOTA ? false : true}
           onClick={handleSearchBtn}
         >
-          {quota < 10000 - 100 && (
+          {quota < MAX_QUOTA && (
             <Search sx={{ color: 'white', fontSize: '2rem' }} />
           )}
         </SearchBtn>
+        <QuotaViewerContainer>
+          <svg width={QUOTA_PROGRESS_WIDTH} height={QUOTA_PROGRESS_WIDTH}>
+            <circle
+              cx={QUOTA_PROGRESS_WIDTH / 2}
+              cy={QUOTA_PROGRESS_WIDTH / 2}
+              r={QUOTA_PROGRESS_RADIUS}
+              stroke='#aaa'
+              strokeWidth={QUOTA_PROGRESS_STROKE}
+              fill='none'
+            />
+            <circle
+              cx={QUOTA_PROGRESS_WIDTH / 2}
+              cy={QUOTA_PROGRESS_WIDTH / 2}
+              r={QUOTA_PROGRESS_RADIUS}
+              stroke='#0c0'
+              strokeWidth={QUOTA_PROGRESS_STROKE}
+              strokeDasharray={2 * Math.PI * QUOTA_PROGRESS_RADIUS}
+              strokeDashoffset={getProgressOffset(quota)}
+              strokeLinecap='round'
+              fill='none'
+            />
+          </svg>
+          <div>
+            {`${Math.round((quota / MAX_QUOTA + Number.EPSILON) * 100)}%`}
+          </div>
+        </QuotaViewerContainer>
       </SearchBarContainer>
       <ResultsContainer>
         {isLoading ? (
