@@ -47,11 +47,12 @@ const CloseBtn = styled.button`
   justify-content: space-around;
   align-items: center;
   border-radius: 1rem;
+  background-color: rgb(255, 255, 255);
   box-shadow: 0 1px 1px 2px rgba(0, 0, 0, 0.1);
   transition: all 0.5s ease-in-out;
 
   &:hover {
-    background-color: rgba(0, 0, 0, 0.3);
+    background-color: rgb(99, 99, 99);
   }
 
   @media (min-width: 768px) {

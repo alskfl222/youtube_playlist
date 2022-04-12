@@ -28,7 +28,7 @@ const Container = styled.div`
     cursor: pointer;
 
     &:hover {
-      background-color: rgba(0, 0, 0, 0.3);
+      background-color: rgb(159, 159, 159);
     }
   }
 `;
@@ -170,10 +170,10 @@ const Player = () => {
       }
       setCurrentTime((currentTime) => 0);
       setDuration((duration) => 0);
-      setQueue(queue => next)
+      setQueue((queue) => next);
     }
     if (event.data === 1) {
-      setNext(next => queue + 1)
+      setNext((next) => queue + 1);
       const newCurrentTime = (await player?.getCurrentTime()) as number;
       setCurrentTime((currentTime) => newCurrentTime);
       if (timer.current !== null) {
@@ -238,6 +238,11 @@ const Player = () => {
 
   const [windowWidth, setWindowWidth] = useState(getWindowWidth());
 
+  const handleChatTabBtn = () => {
+    const scrollToChat = ((windowWidth - 32) / 16) * 9 + 4 * 16;
+    window.scrollTo(0, scrollToChat);
+  };
+
   useEffect(() => {
     if (!state) {
       navigate('/lists');
@@ -295,7 +300,6 @@ const Player = () => {
     }
     // eslint-disable-next-line
   }, [queue, isLoading]);
-
 
   return (
     <Container>
@@ -363,7 +367,7 @@ const Player = () => {
             <TabBtn onClick={() => handleTab('list')}>
               <List />
             </TabBtn>
-            <TabBtn onClick={() => handleTab('chat')}>
+            <TabBtn onClick={handleChatTabBtn}>
               <ChatBubbleOutline />
             </TabBtn>
           </PlayerTab>
