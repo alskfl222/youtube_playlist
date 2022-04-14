@@ -1,3 +1,5 @@
-FROM server:0.1
+FROM node:16.14.2-alpine
 
 WORKDIR /server
+
+CMD yarn dev

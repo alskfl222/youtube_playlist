@@ -9,4 +9,8 @@ router.use('/users', usersRouter)
 router.use('/lists', listsRouter)
 router.use('/player', playerRouter)
 
+router.get('/', (req, res) => {
+  res.send('HELLO!')
+})
+
 export default router;

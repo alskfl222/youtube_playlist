@@ -9,28 +9,28 @@ import socketEvent from './controllers/chat';
 import router from './routes';
 import 'dotenv/config';
 
-const connectDB = () => {
-  createConnection()
-    .then(async (connection) => {
-      console.log('DATABASE CONNECTED');
-    })
-    .catch((error) => {
-      console.log(error);
-      if (error.code === 'PROTOCOL_CONNECTION_LOST') {
-        console.log('TRY RECONNECT');
-        setTimeout(connectDB, 2000);
-      } else {
-        throw error;
-      }
-    });
-};
+// const connectDB = () => {
+//   createConnection()
+//     .then(async (connection) => {
+//       console.log('DATABASE CONNECTED');
+//     })
+//     .catch((error) => {
+//       console.log(error);
+//       if (error.code === 'PROTOCOL_CONNECTION_LOST') {
+//         console.log('TRY RECONNECT');
+//         setTimeout(connectDB, 2000);
+//       } else {
+//         throw error;
+//       }
+//     });
+// };
 
-connectDB();
+// connectDB();
 
 const app = express();
 const server = http.createServer(app);
 const io = new SocketIO.Server(server, {
-  cors: { origin: 'http://localhost:3000', methods: ['GET', 'POST'], credentials: true },
+  cors: { origin: 'http://localhost', methods: ['GET', 'POST'], credentials: true },
 });
 
 app.set('port', process.env.SERVER_PORT || 4000);
@@ -39,7 +39,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin: ['http://localhost:3000'],
+    origin: ['http://localhost'],
     credentials: true,
     methods: ['GET', 'POST', 'OPTIONS', 'PATCH', 'DELETE'],
   })

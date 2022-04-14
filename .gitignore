@@ -1,12 +1,7 @@
 __pycache__
 node_modules
-google-cloud-sdk
 
 .env
-temp.txt
+MYSQL_ROOT_PASSWORD
 package-lock.json
-yarn.lock
-*.fig:Zone.Identifier
-nohup.out
-gcp_key.json
 ormconfig.*

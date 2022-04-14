@@ -1,25 +1,39 @@
 version: '3'
 
 services:
-  client:
+  # client:
+  #   restart: always
+  #   image: yp-client:0.1
+  #   build:
+  #     context: ./client
+  #   volumes:
+  #     - ./client:/client
+
+  # server:
+  #   restart: always
+  #   image: yp-server:0.1
+  #   build:
+  #     context: ./server
+  #   volumes:
+  #     - ./server:/server
+
+  db:
     restart: always
-    image: yp-client:0.1
+    image: yp-db:0.1
     build:
-      context: ./client
+      context: ./db
+    command: --default-authentication-plugin=mysql_native_password
     volumes:
-      - ./client:/client
-    ports:
-      - 3000:3000
-    expose:
-      - 3000
+      - ./db/MYSQL_ROOT_PASSWORD:/run/secrets/MYSQL_ROOT_PASSWORD
+    environment:
+      - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/MYSQL_ROOT_PASSWORD
 
-
-  # proxy:
+  # nginx:
   #   depends_on:
-  #     - react
-  #     - express
+  #     - client
+  #     - server
   #   image: nginx:alpine
-  #   container_name: proxy
+  #   container_name: nginx
   #   restart: always
   #   ports:
   #     - 80:80
