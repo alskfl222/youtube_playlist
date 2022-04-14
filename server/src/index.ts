@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 import http from 'http';
 import { createConnection } from 'typeorm';
+
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
@@ -8,6 +9,7 @@ import * as SocketIO from 'socket.io';
 import socketEvent from './controllers/chat';
 import router from './routes';
 import 'dotenv/config';
+
 
 const connectDB = () => {
   createConnection()
