@@ -32,7 +32,12 @@ connectDB();
 const app = express();
 const server = http.createServer(app);
 const io = new SocketIO.Server(server, {
-  cors: { origin: 'http://localhost:3000', methods: ['GET', 'POST'], credentials: true },
+  // cors: {
+  //   origin: `${process.env.CLIENT_DOMAIN}:${process.env.CLIENT_PORT}`,
+  //   methods: ['GET', 'POST'],
+  //   credentials: true,
+  // },
+  transports: ["websocket"]
 });
 
 app.set('port', process.env.SERVER_PORT || 4000);
@@ -41,18 +46,18 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin: ['http://localhost:3000'],
+    origin: [`${process.env.CLIENT_DOMAIN}:${process.env.CLIENT_PORT}`],
     credentials: true,
     methods: ['GET', 'POST', 'OPTIONS', 'PATCH', 'DELETE'],
   })
 );
 
 io.on('connection', (socket) => {
-  console.log('SOCKET CONNECTED?');
-  socketEvent(socket)
+  console.log('SOCKET CONNECTED');
+  socketEvent(socket);
 });
 
-app.use('/', router);
+app.use('/server', router);
 
 server.listen(app.get('port'), () => {
   console.log(`SERVER listens on PORT ${app.get('port')}`);

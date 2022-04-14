@@ -1,13 +1,7 @@
 __pycache__
 node_modules
-google-cloud-sdk
-oracle
 
 .env
-temp.txt
+MYSQL_ROOT_PASSWORD
 package-lock.json
-yarn.lock
-nohup.out
-gcp_key.json
 ormconfig.*
-Wallet*.*

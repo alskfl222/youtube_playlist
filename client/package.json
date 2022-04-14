@@ -20,7 +20,7 @@
     "youtube-player": "^5.5.2"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "export PORT=80 && react-scripts start",
     "build": "react-scripts build"
   },
   "eslintConfig": {
