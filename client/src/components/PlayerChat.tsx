@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import io from 'socket.io-client';
+import { io } from 'socket.io-client';
 import { playerChatDelete } from '../apis';
 import styled from 'styled-components';
 import { Delete, Send } from '@mui/icons-material';
@@ -128,7 +128,8 @@ const PlayerChat = (props: any) => {
   useEffect(() => {
     socket.current = io(`${process.env.REACT_APP_API_URL}`, {
       query: [`${playerId}`],
-      withCredentials: true,
+      // withCredentials: true,
+      transports: ['websocket'],
     });
 
     socket.current.emit('join', playerId, userId);
