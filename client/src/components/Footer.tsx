@@ -16,6 +16,7 @@ const ProjectTitle = styled.div`
   width: 50%;
   padding: 0 1rem;
   border-right: 1px solid #fcfcfc;
+  line-height: 2.5rem;
   color: white;
   font-size: 2rem;
   font-weight: 700;
