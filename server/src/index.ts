@@ -32,11 +32,12 @@ connectDB();
 const app = express();
 const server = http.createServer(app);
 const io = new SocketIO.Server(server, {
-  // cors: {
-  //   origin: `${process.env.CLIENT_DOMAIN}:${process.env.CLIENT_PORT}`,
-  //   methods: ['GET', 'POST'],
-  //   credentials: true,
-  // },
+  cors: {
+    origin: `${process.env.CLIENT_DOMAIN}:${process.env.CLIENT_PORT}`,
+    methods: ['GET', 'POST'],
+    credentials: true,
+  },
+  path: '/socket.io',
   transports: ["websocket"]
 });
 
