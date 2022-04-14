@@ -40,7 +40,7 @@ const DeleteBtn = styled(PlayerBtn)`
   width: 30%;
   @media (min-width: 768px) {
     &::before {
-      content: '선택목록 삭제';
+      content: '목록 삭제';
     }
   }
 `;
