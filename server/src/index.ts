@@ -35,6 +35,7 @@ const io = new SocketIO.Server(server, {
   //   methods: ['GET', 'POST'],
   //   credentials: true,
   // },
+  transports: ["websocket"]
 });
 
 app.set('port', process.env.SERVER_PORT || 4000);
@@ -54,7 +55,7 @@ io.on('connection', (socket) => {
   socketEvent(socket);
 });
 
-app.use('/', router);
+app.use('/server', router);
 
 server.listen(app.get('port'), () => {
   console.log(`SERVER listens on PORT ${app.get('port')}`);
