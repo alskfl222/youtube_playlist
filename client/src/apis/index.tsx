@@ -59,7 +59,7 @@ export const playerChatDelete = (
     userId: number;
     username: string;
     chat: string;
-    addedAt: Date;
+    createdAt: Date;
   }
 ) => {
   return axios

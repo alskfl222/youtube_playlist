@@ -98,7 +98,7 @@ const playerController = {
         .innerJoin('playerLists.player', 'player')
         .where('player.id = :id', { id })
         .getMany();
-
+      console.log('songs[0]: ', songs[0]);
       res.json({
         data: songs,
         message: 'ok',
@@ -113,14 +113,14 @@ const playerController = {
 
   chatDelete: async (req: Request, res: Response, next: NextFunction) => {
     try {
-      let { userId, addedAt } = req.body;
-      addedAt = new Date(addedAt);
+      let { userId, createdAt } = req.body;
+      createdAt = new Date(createdAt);
       const checkChat = await getConnection()
         .createQueryBuilder(Chat, 'chat')
         .innerJoin('chat.chatPlayers', 'chatPlayers')
         .select(['chat.id', 'chatPlayers.id'])
         .where('chat.userId = :userId', { userId })
-        .andWhere('chat.addedAt = :addedAt', { addedAt })
+        .andWhere('chat.createdAt = :createdAt', { createdAt })
         .getOne();
       const chatId = checkChat.id;
       const chatPlayersId = checkChat.chatPlayers[0].id;
@@ -133,7 +133,7 @@ const playerController = {
           id: chatPlayersId,
         })
         .execute();
-      console.log(deleteChatPlayers)
+      console.log(deleteChatPlayers);
       let deleteChat = await getConnection()
         .createQueryBuilder()
         .delete()
@@ -142,7 +142,7 @@ const playerController = {
           id: chatId,
         })
         .execute();
-      console.log(deleteChat)
+      console.log(deleteChat);
 
       res.status(200).send('OK');
     } catch (err) {

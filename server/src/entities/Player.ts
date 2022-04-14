@@ -7,8 +7,8 @@ export class Player {
   @PrimaryGeneratedColumn({ type: "int", name: "id" })
   id: number;
 
-  @Column("timestamp", { name: "added_at", default: () => "CURRENT_TIMESTAMP" })
-  addedAt: Date;
+  @Column("timestamp", { name: "created_at", default: () => "CURRENT_TIMESTAMP" })
+  createdAt: Date;
 
   @OneToMany(() => PlayerList, (playerList) => playerList.player)
   playerLists: PlayerList[];

@@ -1,3 +1,5 @@
-FROM client:0.1
+FROM node:16.14.2-alpine
 
 WORKDIR /client
+
+CMD yarn start

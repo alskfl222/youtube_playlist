@@ -1,40 +1,53 @@
 version: '3'
 
 services:
-  proxy:
-    depends_on:
-      - react
-      - express
-    image: nginx:alpine
-    container_name: proxy
+  client:
     restart: always
-    ports:
-      - 80:80
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-
-  react:
-    image: client:0.2
-    container_name: client
-    restart: always
+    image: yp-client:0.1
+    build:
+      context: ./client
     volumes:
       - ./client:/client
-    entrypoint: ["/bin/sh", "-c"]
-    command:
-      - |
-        /client/start_client.sh 
+    ports:
+      - 3000:3000
+    expose:
+      - 3000
 
-  express:
-    image: server:0.8
-    container_name: server
-    restart: always
-    volumes:
-      - ./server:/server
-    environment:
-      - GOOGLE_APPLICATION_CREDENTIALS=/server/gcp_key.json
-    entrypoint: ["/bin/sh", "-c"]
-    command:
-      - |
-        /server/connect_proxy.sh 
-        sleep 5s
-        /server/start_server.sh
+
+  # proxy:
+  #   depends_on:
+  #     - react
+  #     - express
+  #   image: nginx:alpine
+  #   container_name: proxy
+  #   restart: always
+  #   ports:
+  #     - 80:80
+  #   volumes:
+  #     - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+
+  # react:
+  #   image: client:0.2
+  #   container_name: client
+  #   restart: always
+  #   volumes:
+  #     - ./client:/client
+  #   entrypoint: ["/bin/sh", "-c"]
+  #   command:
+  #     - |
+  #       /client/start_client.sh 
+
+  # express:
+  #   image: server:0.8
+  #   container_name: server
+  #   restart: always
+  #   volumes:
+  #     - ./server:/server
+  #   environment:
+  #     - GOOGLE_APPLICATION_CREDENTIALS=/server/gcp_key.json
+  #   entrypoint: ["/bin/sh", "-c"]
+  #   command:
+  #     - |
+  #       /server/connect_proxy.sh 
+  #       sleep 5s
+  #       /server/start_server.sh

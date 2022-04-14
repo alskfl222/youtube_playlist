@@ -1,19 +1,129 @@
 import { useEffect, useState, useRef } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { playerItems } from '../apis';
-import { throttle } from 'lodash';
-import styled from 'styled-components';
+import { padStart, throttle } from 'lodash';
 import YouTubePlayer from 'youtube-player';
 import PlayerList from '../components/PlayerList';
 import PlayerChat from '../components/PlayerChat';
+import styled from 'styled-components';
+import {
+  ArrowBack,
+  List,
+  HourglassEmptyOutlined,
+  ChatBubbleOutline,
+  PlayCircleFilled,
+  PauseCircleFilled,
+  SkipNext,
+} from '@mui/icons-material';
 
 const Container = styled.div`
   display: flex;
   flex-direction: column;
+  gap: 1rem;
+
+  button {
+    border: none;
+    border-radius: 0.5rem;
+    background: #fcfcfc;
+    cursor: pointer;
+
+    &:hover {
+      background-color: rgb(159, 159, 159);
+    }
+  }
 `;
+
 const PlayerContainer = styled.div`
+  padding: 1rem 2rem;
   display: flex;
   justify-content: center;
+`;
+
+const PlayerStatusContainer = styled.div`
+  padding: 1rem 2rem 0 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+`;
+
+const PlayerControllerBar = styled.div`
+  width: 100%;
+  height: 5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const PlayerControllerContainer = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 1rem;
+`;
+
+const ControllerBtn = styled.button`
+  width: 3rem;
+  height: 3rem;
+`;
+
+const ControllerClock = styled.div`
+  width: 15rem;
+  height: 3rem;
+  padding: 0 3rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #fcfcfc;
+`;
+
+const SonginfoContainer = styled.div`
+  width: 100%;
+  height: 4rem;
+  padding: 1rem 2rem;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #fcfcfc;
+`;
+
+const SongTitle = styled.p`
+  width: 70%;
+  font-weight: 700;
+  white-space: nowrap;
+  word-break: keep-all;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`;
+
+const SongUploader = styled.p`
+  width: 30%;
+  text-align: right;
+
+  a {
+    color: black;
+    font-weight: 500;
+    text-decoration: none;
+    white-space: nowrap;
+    word-break: keep-all;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+`;
+
+const PlayerTab = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+`;
+
+const TabBtn = styled.button`
+  width: 100%;
+  height: 3rem;
+  border: none;
+  background-color: #fcfcfc;
 `;
 
 const Player = () => {
@@ -28,7 +138,8 @@ const Player = () => {
   >('');
   const [items, setItems] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [isOpenedList, setIsOpenedList] = useState<boolean>(false);
+  const [next, setNext] = useState<number>(1);
+  const [tab, setTab] = useState<string>('chat');
   const [player, setPlayer] = useState<any>(null);
   const [currentTime, setCurrentTime] = useState<number>(0);
   const [duration, setDuration] = useState<number>(0);
@@ -39,8 +150,12 @@ const Player = () => {
     player?.playVideo();
   };
 
-  const stopPlayer = () => {
-    player?.stopVideo();
+  const pausePlayer = () => {
+    player?.pauseVideo();
+  };
+
+  const skipPlayer = () => {
+    setQueue((queue) => queue + 1);
   };
 
   const startTimer = () => {
@@ -55,9 +170,10 @@ const Player = () => {
       }
       setCurrentTime((currentTime) => 0);
       setDuration((duration) => 0);
-      setQueue((queue) => queue + 1);
+      setQueue((queue) => next);
     }
     if (event.data === 1) {
+      setNext((next) => queue + 1);
       const newCurrentTime = (await player?.getCurrentTime()) as number;
       setCurrentTime((currentTime) => newCurrentTime);
       if (timer.current !== null) {
@@ -108,8 +224,8 @@ const Player = () => {
     }
   });
 
-  const handleListsViewerBtn = () => {
-    setIsOpenedList((value) => !value);
+  const handleTab = (tab: string): void => {
+    setTab((state) => tab);
   };
   const handleQueue = (index: number) => {
     setQueue((queue) => index);
@@ -122,6 +238,11 @@ const Player = () => {
 
   const [windowWidth, setWindowWidth] = useState(getWindowWidth());
 
+  const handleChatTabBtn = () => {
+    const scrollToChat = ((windowWidth - 32) / 16) * 9 + 4 * 16;
+    window.scrollTo(0, scrollToChat);
+  };
+
   useEffect(() => {
     if (!state) {
       navigate('/lists');
@@ -131,7 +252,11 @@ const Player = () => {
     const initPlayer = () => {
       playerItems(id)
         .then((res) => {
-          setItems((items) => res.data);
+          const available = res.data.filter(
+            (item: any) =>
+              !(item.name === 'Deleted video' || item.name === 'Private video')
+          );
+          setItems((items) => available);
           setPlayer(YouTubePlayer('youtube-player'));
           setIsLoading(false);
         })
@@ -148,7 +273,7 @@ const Player = () => {
       timer.current = null;
       setItems((items) => []);
       setIsLoading((isLoading) => true);
-      setIsOpenedList((isOpenedList) => false);
+      setTab((tab) => 'chat');
       setPlayer((player: any) => null);
       setCurrentTime((currentTime) => 0);
       setDuration((duration) => 0);
@@ -182,42 +307,79 @@ const Player = () => {
         <div id='youtube-player'></div>
       </PlayerContainer>
       {!isLoading && items.length > 0 ? (
-        <>
-          {isOpenedList && (
+        <PlayerStatusContainer>
+          {false && (
             <PlayerList
               items={items}
               queue={queue}
               choice={handleQueue}
-              close={handleListsViewerBtn}
+              close={() => handleTab('chat')}
             />
           )}
-          <div>
-            {items.length > 0 && (
-              <div>
-                <p>{items[queue].name}</p>
-                <p>
-                  <a
-                    href={`https://www.youtube.com/channel/${items[queue].uploader_href}`}
-                  >
-                    {items[queue].uploader}
-                  </a>
-                </p>
-              </div>
-            )}
-          </div>
-          <div>
-            <button onClick={startPlayer}>start</button>
-            <button onClick={stopPlayer}>stop</button>
-            {`${Math.floor(currentTime / 60)} : ${Math.floor(
-              currentTime % 60
-            )}`}{' '}
-            / {`${Math.floor(duration / 60)} : ${Math.floor(duration % 60)}`}
-          </div>
-          <div>
-            <button onClick={handleListsViewerBtn}>open</button>
-          </div>
+
+          {items.length > 0 && (
+            <SonginfoContainer>
+              <SongTitle>{items[queue].name}</SongTitle>
+              <SongUploader>
+                <a
+                  href={`https://www.youtube.com/channel/${items[queue].uploader_href}`}
+                >
+                  {items[queue].uploader}
+                </a>
+              </SongUploader>
+            </SonginfoContainer>
+          )}
+
+          <PlayerControllerBar>
+            <ControllerBtn onClick={() => navigate('/lists')}>
+              <ArrowBack />
+            </ControllerBtn>
+            <PlayerControllerContainer>
+              <ControllerBtn onClick={startPlayer}>
+                <PlayCircleFilled />
+              </ControllerBtn>
+              <ControllerBtn onClick={pausePlayer}>
+                <PauseCircleFilled />
+              </ControllerBtn>
+              <ControllerBtn onClick={skipPlayer}>
+                <SkipNext />
+              </ControllerBtn>
+              <ControllerClock>
+                {`${Math.floor(currentTime / 60)} : ${padStart(
+                  Math.floor(currentTime % 60).toString(),
+                  2,
+                  '0'
+                )}`}{' '}
+                /{' '}
+                {duration !== 0 ? (
+                  `${Math.floor(duration / 60)} : ${padStart(
+                    Math.floor(duration % 60).toString(),
+                    2,
+                    '0'
+                  )}`
+                ) : (
+                  <HourglassEmptyOutlined />
+                )}
+              </ControllerClock>
+            </PlayerControllerContainer>
+          </PlayerControllerBar>
+          <PlayerTab>
+            <TabBtn onClick={() => handleTab('list')}>
+              <List />
+            </TabBtn>
+            <TabBtn onClick={handleChatTabBtn}>
+              <ChatBubbleOutline />
+            </TabBtn>
+          </PlayerTab>
           <PlayerChat userinfo={userinfo} playerId={Number(id)} />
-        </>
+          <PlayerList
+            items={items}
+            queue={queue}
+            choice={handleQueue}
+            isOpen={tab === 'list'}
+            close={() => handleTab('chat')}
+          />
+        </PlayerStatusContainer>
       ) : isLoading ? (
         <div>로딩중입니다</div>
       ) : (
