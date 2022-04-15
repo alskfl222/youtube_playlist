@@ -5,3 +5,4 @@ node_modules
 MYSQL_ROOT_PASSWORD
 package-lock.json
 ormconfig.*
+*.pem
