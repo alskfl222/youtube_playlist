@@ -6,5 +6,5 @@ http
     res.end('Hello World!');
   })
   .listen(3000, () => {
-    console.log('SERVER RUNNING!');
+    console.log('SERVER RUNNING on 3000!');
   });

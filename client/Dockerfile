@@ -5,4 +5,4 @@ WORKDIR /client
 # RUN apk add --update npm
 # RUN yarn install
 
-CMD yarn install && yarn start
+CMD yarn start
