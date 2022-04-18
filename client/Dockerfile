@@ -3,7 +3,6 @@ FROM node:16.14.2-alpine
 WORKDIR /client
 
 RUN apk add --update npm
-RUN npm install -g yarn
 RUN yarn install
 
 CMD yarn start
