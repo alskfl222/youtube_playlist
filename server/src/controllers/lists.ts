@@ -20,6 +20,7 @@ const listsController = {
     try {
       const tokenData = token.isAuthorized(req);
       if (!tokenData) {
+        console.log('NO TOKEN')
         const lists = await getConnection()
           .createQueryBuilder(List, 'list')
           .limit(10)

@@ -80,6 +80,7 @@ const usersController = {
 
       const accessToken = token.generateAccessToken(tokenData);
       delete tokenData['token'];
+      console.log(accessToken)
       token.sendAccessToken(res, tokenData, accessToken);
     } catch (err) {
       res.status(500).send({
