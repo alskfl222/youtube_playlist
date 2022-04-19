@@ -12,7 +12,10 @@ import 'dotenv/config';
 const oauth2Client = new google.auth.OAuth2(
   process.env.GOOGLE_CLIENT_ID,
   process.env.GOOGLE_CLIENT_SECRET,
-  `${process.env.CLIENT_DOMAIN}:${process.env.CLIENT_PORT}/callback`  // callback 주소
+  `${
+    process.env.CLIENT_DOMAIN +
+    (process.env.CLIENT_PORT !== '80' ? ':' + process.env.CLIENT_PORT : '')
+  }/callback` // callback 주소
 );
 
 const authURL = oauth2Client.generateAuthUrl({
@@ -37,17 +40,17 @@ const usersController = {
   },
   login: async (req: Request, res: Response, next: NextFunction) => {
     try {
-      console.log('LOGIN START')
+      console.log('LOGIN START');
       const code: string = req.body.code;
 
       const { tokens } = await oauth2Client.getToken(code);
-      console.log("Get TOKENS")
+      console.log('Get TOKENS');
       oauth2Client.setCredentials(tokens);
       const oauth2 = google.oauth2({ auth: oauth2Client, version: 'v2' });
       const googleUserInfoResponse = await oauth2.userinfo.get();
 
-      const googleUserInfo = googleUserInfoResponse.data
-      console.log("Get USERINFO")
+      const googleUserInfo = googleUserInfoResponse.data;
+      console.log('Get USERINFO');
 
       const queryBuilder = await getConnection().createQueryBuilder(
         User,
@@ -101,7 +104,7 @@ const usersController = {
       });
       next(err);
     }
-  }
+  },
 };
 
 export default usersController;

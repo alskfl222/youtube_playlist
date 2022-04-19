@@ -10,7 +10,6 @@ import socketEvent from './controllers/chat';
 import router from './routes';
 import 'dotenv/config';
 
-
 const connectDB = () => {
   createConnection()
     .then(async (connection) => {
@@ -38,7 +37,7 @@ const io = new SocketIO.Server(server, {
     credentials: true,
   },
   path: '/socket.io',
-  transports: ["websocket"]
+  transports: ['websocket'],
 });
 
 app.set('port', process.env.SERVER_PORT || 4000);
@@ -47,7 +46,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin: [`${process.env.CLIENT_DOMAIN}:${process.env.CLIENT_PORT}`],
+    origin: [`${process.env.CLIENT_DOMAIN + ':' + process.env.CLIENT_PORT}`],
     credentials: true,
     methods: ['GET', 'POST', 'OPTIONS', 'PATCH', 'DELETE'],
   })
@@ -58,7 +57,7 @@ io.on('connection', (socket) => {
   socketEvent(socket);
 });
 
-app.use('/server', router);
+app.use('/', router);
 
 server.listen(app.get('port'), () => {
   console.log(`SERVER listens on PORT ${app.get('port')}`);
