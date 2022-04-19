@@ -126,7 +126,7 @@ const PlayerChat = (props: any) => {
   ) as HTMLInputElement;
 
   useEffect(() => {
-    socket.current = io('ws://localhost:3000', {
+    socket.current = io(`${process.env.REACT_APP_SOCKET_URL}`, {
       path: "/socket.io",
       query: [`${playerId}`],
       withCredentials: true,
