@@ -10,8 +10,6 @@ services:
       - ./client:/client
 
   server:
-    depends_on:
-      - db
     restart: always
     image: yp-server:0.1
     build:
@@ -19,17 +17,17 @@ services:
     volumes:
       - ./server:/server
 
-  db:
-    restart: always
-    image: yp-db:0.1
-    build:
-      context: ./db
-    command: --default-authentication-plugin=mysql_native_password
-    volumes:
-      - ./db/MYSQL_ROOT_PASSWORD:/run/secrets/MYSQL_ROOT_PASSWORD
-    environment:
-      - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/MYSQL_ROOT_PASSWORD
-      - MYSQL_DATABASE=ypdb
+  # db:
+  #   restart: always
+  #   image: yp-db:0.1
+  #   build:
+  #     context: ./db
+  #   command: --default-authentication-plugin=mysql_native_password
+  #   volumes:
+  #     - ./db/MYSQL_ROOT_PASSWORD:/run/secrets/MYSQL_ROOT_PASSWORD
+  #   environment:
+  #     - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/MYSQL_ROOT_PASSWORD
+  #     - MYSQL_DATABASE=ypdb
 
   nginx:
     depends_on:
