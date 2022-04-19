@@ -12,7 +12,11 @@ import 'dotenv/config';
 const oauth2Client = new google.auth.OAuth2(
   process.env.GOOGLE_CLIENT_ID,
   process.env.GOOGLE_CLIENT_SECRET,
-  `${process.env.CLIENT_DOMAIN}:${process.env.CLIENT_PORT}/callback`  // callback 주소
+  `${
+    process.env.CLIENT_DOMAIN + (process.env.CLIENT_PORT !== '80'
+      ? ':' + process.env.CLIENT_PORT
+      : '')
+  }/callback` // callback 주소
 );
 
 const authURL = oauth2Client.generateAuthUrl({

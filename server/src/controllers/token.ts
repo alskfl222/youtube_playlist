@@ -15,11 +15,11 @@ export default {
     }),
   sendAccessToken: (res: Response, data: tokenData, accessToken: string) => {
     res.cookie('Authorization', `Bearer ${accessToken}`, {
-      // domain: process.env.SERVER_DOMAIN,
+      domain: 'https://api.alskfl.xyz',
       path: '/',
       maxAge: 10 * 60 * 60 * 1000, // 1 + 9 hr
-      // sameSite: 'none',
-      // secure: true,
+      sameSite: 'none',
+      secure: true,
       httpOnly: true,
     });
     res.json({ data, message: "OK" });
