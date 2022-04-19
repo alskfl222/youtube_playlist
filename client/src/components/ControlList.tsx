@@ -163,6 +163,7 @@ const ControlList = () => {
     const fetchData = async () => {
       await listGetAll()
         .then((res) => {
+          console.log(res)
           setListItems((listItems) => res.lists);
           if (res.username) {
             setIsLogin((isLogin) => true);
