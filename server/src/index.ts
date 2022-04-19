@@ -46,7 +46,8 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin: [`${process.env.CLIENT_DOMAIN + ':' + process.env.CLIENT_PORT}`],
+    // origin: [`${process.env.CLIENT_DOMAIN}:${process.env.CLIENT_PORT}`],
+    origin: 'https://alskfl.xyz',
     credentials: true,
     methods: ['GET', 'POST', 'OPTIONS', 'PATCH', 'DELETE'],
   })
@@ -57,6 +58,10 @@ io.on('connection', (socket) => {
   socketEvent(socket);
 });
 
+app.get('/', (req, res) => {
+    res.send('HEALTHY?')
+  }
+)
 app.use('/', router);
 
 server.listen(app.get('port'), () => {
