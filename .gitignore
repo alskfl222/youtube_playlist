@@ -1,5 +1,7 @@
 __pycache__
 node_modules
+db
+client
 
 .env
 MYSQL_ROOT_PASSWORD
