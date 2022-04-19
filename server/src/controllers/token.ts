@@ -15,7 +15,7 @@ export default {
     }),
   sendAccessToken: (res: Response, data: tokenData, accessToken: string) => {
     res.cookie('Authorization', `Bearer ${accessToken}`, {
-      domain: 'https://alskfl.xyz',
+      domain: 'alskfl.xyz',
       path: '/',
       maxAge: 10 * 60 * 60 * 1000, // 1 + 9 hr
       sameSite: 'none',
